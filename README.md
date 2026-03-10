@@ -28,13 +28,12 @@ Execute a configuração inicial:
 hermes config
 ```
 
-O wizard irá solicitar:
+O wizard irá solicitar apenas:
 
-- Linear API key e team ID
-- Nomes dos status (In Progress, Dev Testing, In Review)
-- Workflows GitHub (deploy e destroy de ambiente efêmero)
-- Canal Slack para revisões
-- Comando Claude Code para gerar informações de teste
+- Linear API key
+- Linear team ID
+
+Os demais valores (status, canal Slack, etc.) usam defaults. Customização será implementada futuramente.
 
 A configuração é salva em `~/.hermes/config.json`.
 
@@ -60,7 +59,7 @@ hermes test
 - Dispara o workflow de deploy no GitHub Actions
 - Gera informações de teste com Claude Code
 - Atualiza a descrição do ticket no Linear
-- Move para "Dev Testing"
+- Move para "DEV Testing"
 - Aguarda conclusão do deploy (polling com backoff exponencial)
 - Extrai URL do ambiente efêmero dos logs
 
@@ -81,7 +80,7 @@ hermes review
 ```
 
 - Envia mensagem no Slack com link do PR e preview
-- Move ticket para "In Review"
+- Move ticket para "Ready for QA"
 
 ### 5. Encerrar ambiente efêmero
 
@@ -100,8 +99,8 @@ hermes stop
     "apiKey": "...",
     "teamId": "...",
     "statusInProgress": "In Progress",
-    "statusDevTesting": "Dev Testing",
-    "statusInReview": "In Review"
+    "statusDevTesting": "DEV Testing",
+    "statusInReview": "Ready for QA"
   },
   "github": {
     "deployWorkflow": "deploy-ephemeral.yml",

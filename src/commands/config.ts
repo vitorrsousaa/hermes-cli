@@ -7,8 +7,8 @@ import { HermesError } from "../lib/errors.js";
 
 const DEFAULTS = {
   statusInProgress: "In Progress",
-  statusDevTesting: "Dev Testing",
-  statusInReview: "In Review",
+  statusDevTesting: "DEV Testing",
+  statusReadyForQa: "Ready for QA",
   slackChannel: "#review",
   claudeCodeCommand: "claude run test-info",
 };
@@ -38,9 +38,10 @@ export async function configCommand(): Promise<void> {
     }
   }
 
-  const answers = await inquirer.prompt<
-    Record<string, string> & { statusInProgress: string; statusDevTesting: string; statusInReview: string }
-  >([
+  const answers = await inquirer.prompt<{
+    linearApiKey: string;
+    linearTeamId: string;
+  }>([
     {
       type: "password",
       name: "linearApiKey",
@@ -52,36 +53,6 @@ export async function configCommand(): Promise<void> {
       name: "linearTeamId",
       message: "Linear team ID:",
       validate: (v: string) => (v ? true : "Obrigatório"),
-    },
-    {
-      type: "input",
-      name: "statusInProgress",
-      message: "Status 'In Progress':",
-      default: DEFAULTS.statusInProgress,
-    },
-    {
-      type: "input",
-      name: "statusDevTesting",
-      message: "Status 'Dev Testing':",
-      default: DEFAULTS.statusDevTesting,
-    },
-    {
-      type: "input",
-      name: "statusInReview",
-      message: "Status 'In Review':",
-      default: DEFAULTS.statusInReview,
-    },
-    {
-      type: "input",
-      name: "slackChannel",
-      message: "Slack channel:",
-      default: DEFAULTS.slackChannel,
-    },
-    {
-      type: "input",
-      name: "claudeCodeCommand",
-      message: "Claude Code command:",
-      default: DEFAULTS.claudeCodeCommand,
     },
   ]);
 
@@ -98,19 +69,19 @@ export async function configCommand(): Promise<void> {
     linear: {
       apiKey: answers.linearApiKey,
       teamId: answers.linearTeamId,
-      statusInProgress: answers.statusInProgress,
-      statusDevTesting: answers.statusDevTesting,
-      statusInReview: answers.statusInReview,
+      statusInProgress: DEFAULTS.statusInProgress,
+      statusDevTesting: DEFAULTS.statusDevTesting,
+      statusInReview: DEFAULTS.statusReadyForQa,
     },
     github: {
       deployWorkflow: "deploy-ephemeral.yml",
       destroyWorkflow: "destroy-ephemeral.yml",
     },
     slack: {
-      channel: answers.slackChannel,
+      channel: DEFAULTS.slackChannel,
     },
     claudeCode: {
-      command: answers.claudeCodeCommand,
+      command: DEFAULTS.claudeCodeCommand,
     },
   });
 
