@@ -8,6 +8,7 @@ import { stopCommand } from "./commands/stop.js";
 import { prCommand } from "./commands/pr.js";
 import { reviewCommand } from "./commands/review.js";
 import { branchCommand } from "./commands/branch.js";
+import { checkCommand } from "./commands/check.js";
 
 const program = new Command();
 
@@ -68,6 +69,13 @@ program
   .addHelpText("after", "\nShorthand:\n  hermes branch -sc    staging suffix + copy to clipboard")
   .action(async (options: { stg?: boolean; copy?: boolean }) => {
     await branchCommand(options);
+  });
+
+program
+  .command("check")
+  .description("Run typecheck, lint, and prettier on the current project")
+  .action(async () => {
+    await checkCommand();
   });
 
 async function main(): Promise<void> {
