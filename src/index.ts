@@ -12,49 +12,49 @@ const program = new Command();
 
 program
   .name("hermes")
-  .description("CLI para automatizar o fluxo de desenvolvimento entre Linear, GitHub e Slack")
+  .description("CLI to automate the development workflow between Linear, GitHub, and Slack")
   .version("0.1.0");
 
 program
   .command("config")
-  .description("Configurar hermes (Linear, GitHub, Slack)")
+  .description("Configure hermes (Linear, GitHub, Slack)")
   .action(async () => {
     await configCommand();
   });
 
 program
   .command("start <ticket-id>")
-  .description("Iniciar trabalho em um ticket")
-  .option("-t, --type <feat|fix>", "Tipo da branch (feat ou fix)", "feat")
+  .description("Start working on a ticket")
+  .option("-t, --type <feat|fix>", "Branch type (feat or fix)", "feat")
   .action(async (ticketId: string, options: { type?: string }) => {
     await startCommand(ticketId, options);
   });
 
 program
   .command("test")
-  .description("Disparar ambiente efêmero e atualizar ticket")
+  .description("Deploy ephemeral environment and update ticket")
   .action(async () => {
     await testCommand();
   });
 
 program
   .command("stop")
-  .description("Encerrar ambiente efêmero")
+  .description("Tear down ephemeral environment")
   .action(async () => {
     await stopCommand();
   });
 
 program
   .command("pr")
-  .description("Criar pull request")
-  .option("-y, --yes", "Pular interação (--no-edit)")
+  .description("Create pull request")
+  .option("-y, --yes", "Skip interaction (--no-edit)")
   .action(async (options: { yes?: boolean }) => {
     await prCommand(options);
   });
 
 program
   .command("review")
-  .description("Solicitar revisão (Slack + Linear)")
+  .description("Request review (Slack + Linear)")
   .action(async () => {
     await reviewCommand();
   });
@@ -73,7 +73,7 @@ async function main(): Promise<void> {
     if (process.env.HERMES_DEBUG === "1") {
       console.error(err);
     } else {
-      console.error(chalk.red("Erro inesperado."));
+      console.error(chalk.red("Unexpected error."));
     }
     process.exit(1);
   }

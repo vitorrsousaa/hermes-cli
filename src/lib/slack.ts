@@ -13,8 +13,8 @@ export async function sendMessage(channel: string, text: string): Promise<void> 
     ]);
   } catch (err) {
     throw new HermesError(
-      "Falha ao enviar mensagem no Slack.",
-      "Instale o Slack CLI: https://api.slack.com/automation/cli"
+      "Failed to send message on Slack.",
+      "Install the Slack CLI: https://api.slack.com/automation/cli"
     );
   }
 }

@@ -19,7 +19,7 @@ export async function startCommand(
   const config = await loadConfig();
 
   const linearEnv = { apiKey: config.linear.apiKey, teamId: config.linear.teamId };
-  const issue = await withSpinner("Buscando ticket...", () =>
+  const issue = await withSpinner("Fetching ticket...", () =>
     fetchIssue(ticketId, linearEnv)
   );
 
@@ -27,14 +27,14 @@ export async function startCommand(
   console.log(chalk.gray(issue.url));
   console.log(chalk.gray(`Status: ${issue.status}\n`));
 
-  await withSpinner("Movendo ticket para In Progress...", () =>
+  await withSpinner("Moving ticket to In Progress...", () =>
     updateIssueStatus(ticketId, config.linear.statusInProgress, linearEnv)
   );
-  
+
   const type = options.type === "feat" ? "feat" : "fix";
   const branch = `${type}/${ticketId}`;
 
-  await withSpinner("Criando branch...", async () => {
+  await withSpinner("Creating branch...", async () => {
     await execa("git", ["checkout", "main"]);
     await execa("git", ["checkout", "-b", branch]);
   });
@@ -54,7 +54,7 @@ export async function startCommand(
   await saveContext(context);
   await ensureGitignore();
 
-  console.log(chalk.green("\n✓ Ticket ativo"));
+  console.log(chalk.green("\n✓ Ticket active"));
   console.log(chalk.gray(`  Branch: ${branch}`));
   console.log(chalk.gray(`  Context: ${root}/.hermes-context.json`));
 }

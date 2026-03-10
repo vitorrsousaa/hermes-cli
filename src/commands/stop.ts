@@ -11,16 +11,16 @@ export async function stopCommand(): Promise<void> {
   const context = await loadContext();
 
   if (!context.ephemeralEnvUrl) {
-    console.log("Nenhum ambiente efêmero para encerrar.");
+    console.log("No ephemeral environment to tear down.");
     process.exit(0);
   }
 
-  await withSpinner("Encerrando ambiente efêmero...", () =>
+  await withSpinner("Tearing down ephemeral environment...", () =>
     triggerWorkflow(config.github.destroyWorkflow, { branch: context.branch })
   );
 
   context.ephemeralEnvUrl = null;
   await saveContext(context);
 
-  console.log(chalk.green("\n✓ Ambiente efêmero encerrado."));
+  console.log(chalk.green("\n✓ Ephemeral environment destroyed."));
 }

@@ -29,8 +29,8 @@ export async function checkPrerequisites(
       .map((m) => `  ${m}: ${INSTALL_INSTRUCTIONS[m]}`)
       .join("\n");
     throw new HermesError(
-      `Pré-requisitos não encontrados:\n${instructions}`,
-      "Instale as ferramentas acima e tente novamente."
+      `Missing prerequisites:\n${instructions}`,
+      "Install the tools above and try again."
     );
   }
 }

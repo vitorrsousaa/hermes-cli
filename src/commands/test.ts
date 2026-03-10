@@ -35,7 +35,7 @@ export async function testCommand(): Promise<void> {
   const { ticketId } = context;
 
   const { runId, url: runUrl } = await withSpinner(
-    "Disparando ambiente efêmero...",
+    "Triggering ephemeral environment...",
     () =>
       triggerWorkflow(config.github.deployWorkflow, {
         branch: context.branch,
@@ -47,7 +47,7 @@ export async function testCommand(): Promise<void> {
   let testInfo = "";
   try {
     testInfo = await withSpinner(
-      "Gerando informações de teste com Claude Code...",
+      "Generating test info with Claude Code...",
       async () => {
         const [cmd, ...args] = config.claudeCode.command.split(/\s+/);
         const result = await execa(cmd, args, { stdout: "pipe" });
@@ -55,29 +55,29 @@ export async function testCommand(): Promise<void> {
       }
     );
   } catch (err) {
-    console.log(chalk.yellow("Aviso: Claude Code falhou. Continuando sem informações de teste."));
+    console.log(chalk.yellow("Warning: Claude Code failed. Continuing without test info."));
   }
 
   const linearEnv = { apiKey: config.linear.apiKey, teamId: config.linear.teamId };
   if (testInfo) {
-    await withSpinner("Atualizando ticket no Linear...", async () => {
+    await withSpinner("Updating ticket on Linear...", async () => {
       const issue = await fetchIssue(ticketId, linearEnv);
       const separator = issue.description ? "\n\n" : "";
-      const updatedDescription = `${issue.description}${separator}## Informações de Teste\n\n${testInfo}`;
+      const updatedDescription = `${issue.description}${separator}## Test Information\n\n${testInfo}`;
       await updateIssueDescription(ticketId, updatedDescription, linearEnv);
     });
-    await withSpinner("Movendo ticket para Dev Testing...", () =>
+    await withSpinner("Moving ticket to Dev Testing...", () =>
       updateIssueStatus(ticketId, config.linear.statusDevTesting, linearEnv)
     );
   }
 
-  const runResult = await withSpinner("Aguardando deploy...", () =>
+  const runResult = await withSpinner("Waiting for deploy...", () =>
     waitForRun(runId)
   );
 
   if (runResult.conclusion !== "success") {
-    console.log(chalk.red(`\nDeploy falhou (${runResult.conclusion})`));
-    console.log(chalk.gray(`Detalhes: ${runResult.url}`));
+    console.log(chalk.red(`\nDeploy failed (${runResult.conclusion})`));
+    console.log(chalk.gray(`Details: ${runResult.url}`));
     process.exit(1);
   }
 
@@ -87,10 +87,10 @@ export async function testCommand(): Promise<void> {
   context.ephemeralEnvUrl = ephemeralUrl;
   await saveContext(context);
 
-  console.log(chalk.green("\n✓ Ambiente efêmero disponível"));
+  console.log(chalk.green("\n✓ Ephemeral environment available"));
   if (ephemeralUrl) {
     console.log(chalk.cyan(`  ${ephemeralUrl}`));
   } else {
-    console.log(chalk.yellow("  URL não encontrada nos logs. Verifique manualmente."));
+    console.log(chalk.yellow("  URL not found in logs. Please check manually."));
   }
 }

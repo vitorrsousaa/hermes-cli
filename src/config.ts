@@ -34,8 +34,8 @@ export async function loadConfig(): Promise<HermesConfig> {
     return JSON.parse(content) as HermesConfig;
   } catch {
     throw new HermesError(
-      "Configuração não encontrada.",
-      "Execute hermes config primeiro."
+      "Configuration not found.",
+      "Run hermes config first."
     );
   }
 }

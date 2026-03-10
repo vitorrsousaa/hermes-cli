@@ -27,8 +27,8 @@ export async function loadContext(): Promise<HermesContext> {
     return JSON.parse(content) as HermesContext;
   } catch {
     throw new HermesError(
-      "Nenhum ticket ativo.",
-      "Use hermes start <ticket-id> primeiro."
+      "No active ticket.",
+      "Run hermes start <ticket-id> first."
     );
   }
 }

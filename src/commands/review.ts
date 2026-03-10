@@ -15,27 +15,27 @@ export async function reviewCommand(): Promise<void> {
 
   if (!prUrl) {
     throw new HermesError(
-      "Nenhum PR criado.",
-      "Execute hermes pr primeiro."
+      "No PR created.",
+      "Run hermes pr first."
     );
   }
 
   const message = [
-    "🔍 *Pronto para revisão*",
+    "🔍 *Ready for review*",
     `*[${ticketId}] ${ticketTitle}*`,
     `PR: ${prUrl}`,
-    `Preview: ${ephemeralEnvUrl ?? "Não disponível"}`,
+    `Preview: ${ephemeralEnvUrl ?? "Not available"}`,
   ].join("\n");
 
-  await withSpinner("Enviando mensagem no Slack...", () =>
+  await withSpinner("Sending message on Slack...", () =>
     sendMessage(config.slack.channel, message)
   );
 
   const linearEnv = { apiKey: config.linear.apiKey, teamId: config.linear.teamId };
-  await withSpinner("Movendo ticket para In Review...", () =>
+  await withSpinner("Moving ticket to In Review...", () =>
     updateIssueStatus(ticketId, config.linear.statusInReview, linearEnv)
   );
 
-  console.log(chalk.green("\n✓ Revisão solicitada"));
-  console.log(chalk.gray(`  Canal: ${config.slack.channel}`));
+  console.log(chalk.green("\n✓ Review requested"));
+  console.log(chalk.gray(`  Channel: ${config.slack.channel}`));
 }

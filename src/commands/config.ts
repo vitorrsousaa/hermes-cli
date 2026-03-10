@@ -28,12 +28,12 @@ export async function configCommand(): Promise<void> {
       {
         type: "confirm",
         name: "overwrite",
-        message: "Configuração encontrada. Sobrescrever?",
+        message: "Configuration found. Overwrite?",
         default: false,
       },
     ]);
     if (!overwrite) {
-      console.log("Operação cancelada.");
+      console.log("Operation cancelled.");
       return;
     }
   }
@@ -46,13 +46,13 @@ export async function configCommand(): Promise<void> {
       type: "password",
       name: "linearApiKey",
       message: "Linear API key:",
-      validate: (v: string) => (v ? true : "Obrigatório"),
+      validate: (v: string) => (v ? true : "Required"),
     },
     {
       type: "input",
       name: "linearTeamId",
       message: "Linear team ID:",
-      validate: (v: string) => (v ? true : "Obrigatório"),
+      validate: (v: string) => (v ? true : "Required"),
     },
   ]);
 
@@ -60,8 +60,8 @@ export async function configCommand(): Promise<void> {
     await execa("gh", ["auth", "status"]);
   } catch {
     throw new HermesError(
-      "GitHub não autenticado.",
-      "Execute gh auth login primeiro."
+      "GitHub not authenticated.",
+      "Run gh auth login first."
     );
   }
 
@@ -85,5 +85,5 @@ export async function configCommand(): Promise<void> {
     },
   });
 
-  console.log(chalk.green("Configuração salva com sucesso."));
+  console.log(chalk.green("Configuration saved successfully."));
 }

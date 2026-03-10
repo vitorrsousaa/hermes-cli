@@ -12,16 +12,16 @@ const PR_BODY_TEMPLATE = (
 ) => `## Ticket
 [${ticketId} - ${ticketTitle}](${ticketUrl})
 
-## Ambiente de teste
-${ephemeralEnvUrl ?? "Não disponível"}
+## Test environment
+${ephemeralEnvUrl ?? "Not available"}
 
-## Como testar
-<!-- Descreva os passos para testar -->
+## How to test
+<!-- Describe the steps to test -->
 
 ## Checklist
-- [ ] Testes passando
-- [ ] Sem erros de lint
-- [ ] Revisado localmente
+- [ ] Tests passing
+- [ ] No lint errors
+- [ ] Reviewed locally
 `;
 
 export async function prCommand(options: { yes?: boolean }): Promise<void> {
@@ -36,7 +36,7 @@ export async function prCommand(options: { yes?: boolean }): Promise<void> {
     context.ephemeralEnvUrl
   );
 
-  const { url, number } = await withSpinner("Criando pull request...", () =>
+  const { url, number } = await withSpinner("Creating pull request...", () =>
     createPr({ title, body })
   );
 
@@ -46,7 +46,7 @@ export async function prCommand(options: { yes?: boolean }): Promise<void> {
 
   await copyToClipboard(url);
 
-  console.log(chalk.green("\n✓ Pull request criado"));
+  console.log(chalk.green("\n✓ Pull request created"));
   console.log(chalk.cyan(`  ${url}`));
-  console.log(chalk.gray("  Copiado para clipboard"));
+  console.log(chalk.gray("  Copied to clipboard"));
 }

@@ -57,8 +57,8 @@ export async function triggerWorkflow(
   const runs = JSON.parse(stdout) as { databaseId: number; url: string }[];
   if (!runs.length) {
     throw new HermesError(
-      "Não foi possível obter o ID do workflow run.",
-      "Verifique se o workflow foi disparado corretamente."
+      "Could not get the workflow run ID.",
+      "Check if the workflow was triggered correctly."
     );
   }
   return {
@@ -98,8 +98,8 @@ export async function waitForRun(runId: string): Promise<GhRunResult> {
   }
 
   throw new HermesError(
-    "Timeout aguardando conclusão do workflow.",
-    "Verifique o status em: gh run view " + runId
+    "Timeout waiting for workflow completion.",
+    "Check the status at: gh run view " + runId
   );
 }
 

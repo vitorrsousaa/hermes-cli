@@ -1,97 +1,97 @@
 # Hermes CLI
 
-CLI para automatizar o fluxo de desenvolvimento entre Linear, GitHub e Slack, eliminando o overhead administrativo manual (~15-20min por ticket) ao transicionar entre etapas.
+CLI to automate the development workflow between Linear, GitHub, and Slack, eliminating manual administrative overhead (~15-20min per ticket) when transitioning between stages.
 
-## Instalação
+## Installation
 
 ```bash
-npm install -g @care-webs/hermes
+npm install -g @vitorrsousaa/hermes
 ```
 
-Ou via `npm link` para desenvolvimento:
+Or via `npm link` for development:
 
 ```bash
 npm run build && npm link
 ```
 
-## Pré-requisitos
+## Prerequisites
 
 - **GitHub CLI** (`gh`): [https://cli.github.com/](https://cli.github.com/)
 - **Linear CLI** (`@schpet/linear-cli`): `npm install -g @schpet/linear-cli && linear auth`
-- **Slack CLI** (opcional, para `hermes review`): [https://api.slack.com/automation/cli](https://api.slack.com/automation/cli)
+- **Slack CLI** (optional, for `hermes review`): [https://api.slack.com/automation/cli](https://api.slack.com/automation/cli)
 
 ## Setup
 
-Execute a configuração inicial:
+Run the initial configuration:
 
 ```bash
 hermes config
 ```
 
-O wizard irá solicitar apenas:
+The wizard will ask for:
 
 - Linear API key
 - Linear team ID
 
-Os demais valores (status, canal Slack, etc.) usam defaults. Customização será implementada futuramente.
+Other values (status, Slack channel, etc.) use defaults. Customization will be implemented in the future.
 
-A configuração é salva em `~/.hermes/config.json`.
+Configuration is saved at `~/.hermes/config.json`.
 
-## Workflow completo
+## Full Workflow
 
-### 1. Iniciar trabalho em um ticket
+### 1. Start working on a ticket
 
 ```bash
 hermes start <ticket-id>
 ```
 
-- Busca o ticket no Linear
-- Move para "In Progress"
-- Cria branch `feat/<id>` ou `fix/<id>` (use `--type fix` para fix)
-- Salva contexto em `.hermes-context.json`
+- Fetches the ticket from Linear
+- Moves it to "In Progress"
+- Creates branch `feat/<id>` or `fix/<id>` (use `--type fix` for fix)
+- Saves context to `.hermes-context.json`
 
-### 2. Disparar ambiente efêmero e atualizar ticket
+### 2. Deploy ephemeral environment and update ticket
 
 ```bash
 hermes test
 ```
 
-- Dispara o workflow de deploy no GitHub Actions
-- Gera informações de teste com Claude Code
-- Atualiza a descrição do ticket no Linear
-- Move para "DEV Testing"
-- Aguarda conclusão do deploy (polling com backoff exponencial)
-- Extrai URL do ambiente efêmero dos logs
+- Triggers the deploy workflow on GitHub Actions
+- Generates test information with Claude Code
+- Updates the ticket description on Linear
+- Moves to "DEV Testing"
+- Waits for deploy completion (polling with exponential backoff)
+- Extracts the ephemeral environment URL from logs
 
-### 3. Criar pull request
+### 3. Create pull request
 
 ```bash
 hermes pr
 ```
 
-- Cria PR com título `[TICKET-ID] Título` e template pré-preenchido
-- Copia URL para clipboard
-- Salva `prUrl` e `prNumber` no contexto
+- Creates PR with title `[TICKET-ID] Title` and pre-filled template
+- Copies URL to clipboard
+- Saves `prUrl` and `prNumber` to context
 
-### 4. Solicitar revisão
+### 4. Request review
 
 ```bash
 hermes review
 ```
 
-- Envia mensagem no Slack com link do PR e preview
-- Move ticket para "Ready for QA"
+- Sends a message on Slack with PR link and preview
+- Moves ticket to "Ready for QA"
 
-### 5. Encerrar ambiente efêmero
+### 5. Tear down ephemeral environment
 
 ```bash
 hermes stop
 ```
 
-- Dispara workflow de destroy
-- Remove `ephemeralEnvUrl` do contexto
+- Triggers the destroy workflow
+- Removes `ephemeralEnvUrl` from context
 
-## Referência de configuração
+## Configuration Reference
 
 ```json
 {
@@ -115,7 +115,7 @@ hermes stop
 }
 ```
 
-## Desenvolvimento
+## Development
 
 ```bash
 npm install
@@ -125,8 +125,8 @@ npm run dev   # watch mode
 
 ## Debug
 
-Para ver stack traces em erros inesperados:
+To see stack traces on unexpected errors:
 
 ```bash
-HERMES_DEBUG=1 hermes <comando>
+HERMES_DEBUG=1 hermes <command>
 ```

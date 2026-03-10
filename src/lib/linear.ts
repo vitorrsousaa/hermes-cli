@@ -82,9 +82,9 @@ export async function fetchIssue(
     const msg =
       process.env.HERMES_DEBUG === "1" && err instanceof Error
         ? err.message
-        : "Verifique se o Linear CLI está autenticado (linear auth) ou se a API key no hermes config está correta.";
+        : "Check if the Linear CLI is authenticated (linear auth) or if the API key in hermes config is correct.";
     throw new HermesError(
-      `Falha ao buscar ticket ${issueId}.`,
+      `Failed to fetch ticket ${issueId}.`,
       msg
     );
   }
@@ -99,8 +99,8 @@ export async function updateIssueStatus(
     await runLinear(["issue", "update", issueId, "--state", status], env);
   } catch (err) {
     throw new HermesError(
-      `Falha ao atualizar status do ticket ${issueId}.`,
-      "Verifique se o status existe no seu workspace Linear."
+      `Failed to update ticket status ${issueId}.`,
+      "Check if the status exists in your Linear workspace."
     );
   }
 }
@@ -121,7 +121,7 @@ export async function updateIssueDescription(
     );
   } catch (err) {
     throw new HermesError(
-      `Falha ao atualizar descrição do ticket ${issueId}.`
+      `Failed to update ticket description ${issueId}.`
     );
   }
 }
