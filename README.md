@@ -91,6 +91,24 @@ hermes stop
 - Triggers the destroy workflow
 - Removes `ephemeralEnvUrl` from context
 
+## Utilities
+
+### Get current branch name
+
+```bash
+hermes branch          # prints: feat/ENG-4135
+hermes branch --stg    # prints: feat/ENG-4135-stg
+hermes branch --copy   # prints + copies to clipboard
+hermes branch -sc      # shorthand: staging suffix + copy
+```
+
+| Flag | Short | Description |
+|------|-------|-------------|
+| `--stg` | `-s` | Appends `-stg` suffix to the branch name |
+| `--copy` | `-c` | Copies the result to clipboard |
+
+Useful as a shortcut instead of terminal aliases or scripts.
+
 ## Configuration Reference
 
 ```json

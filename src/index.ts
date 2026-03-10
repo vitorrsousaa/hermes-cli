@@ -7,6 +7,7 @@ import { testCommand } from "./commands/test.js";
 import { stopCommand } from "./commands/stop.js";
 import { prCommand } from "./commands/pr.js";
 import { reviewCommand } from "./commands/review.js";
+import { branchCommand } from "./commands/branch.js";
 
 const program = new Command();
 
@@ -57,6 +58,16 @@ program
   .description("Request review (Slack + Linear)")
   .action(async () => {
     await reviewCommand();
+  });
+
+program
+  .command("branch")
+  .description("Print current branch name")
+  .option("-s, --stg", "Append -stg suffix to branch name")
+  .option("-c, --copy", "Copy branch name to clipboard")
+  .addHelpText("after", "\nShorthand:\n  hermes branch -sc    staging suffix + copy to clipboard")
+  .action(async (options: { stg?: boolean; copy?: boolean }) => {
+    await branchCommand(options);
   });
 
 async function main(): Promise<void> {
