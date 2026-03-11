@@ -28,6 +28,8 @@ npm run build && npm link
 
 - **Slack CLI** (optional, for `hermes review`): [https://api.slack.com/automation/cli](https://api.slack.com/automation/cli)
 
+- **Claude API key** (optional, for `hermes test` summary): `hermes config set claude-api-key <key>`. Without it, `hermes test` skips AI summary generation and Linear ticket update. Use `--skip-summary` to skip these steps explicitly.
+
 ## Full Workflow
 
 ### 1. Start working on a ticket
@@ -60,11 +62,13 @@ hermes deployfe --no-socketio         # disable Socket.IO (enabled by default)
 
 ```bash
 hermes test
+hermes test --skip-summary   # Skip AI summary and Linear ticket update
 ```
 
 - Triggers the deploy workflow on GitHub Actions
 - Moves ticket to "DEV Testing"
 - Copies the workflow run URL to clipboard
+- **Optional summary**: If `claude-api-key` is configured, generates an AI task summary and updates the Linear ticket title. If no API key is set, skips these steps and prints a notice. Use `--skip-summary` to skip them explicitly.
 
 ### 4. Create pull request
 

@@ -44,7 +44,7 @@ function renderSummary(data: TaskSummaryData): void {
   console.log(data.taskSummary);
 }
 
-export async function testCommand(options: { force?: boolean } = {}): Promise<void> {
+export async function testCommand(options: { force?: boolean; skipSummary?: boolean } = {}): Promise<void> {
   await checkPrerequisites(["gh", "linear"]);
   const context = await loadContext();
   const { ticketId, branch } = context;
@@ -74,11 +74,16 @@ export async function testCommand(options: { force?: boolean } = {}): Promise<vo
   console.log(chalk.gray("  Copied to clipboard\n"));
 
   // Optional summary — best-effort, never fails hermes test
-  try {
-    const apiKey = await getClaudeApiKey();
-    debug("claude-api-key:", apiKey ? "configured" : "not set");
+  if (options.skipSummary) {
+    console.log(chalk.gray("\n  Skipping summary generation and Linear ticket update (--skip-summary)"));
+  } else {
+    try {
+      const apiKey = await getClaudeApiKey();
+      debug("claude-api-key:", apiKey ? "configured" : "not set");
 
-    if (apiKey) {
+      if (!apiKey) {
+        console.log(chalk.gray("\n  Skipping summary generation and Linear ticket update (no Claude API key)"));
+      } else {
       const cachePath = buildSummaryCachePath(branch);
       debug("cache path:", cachePath);
       debug("force (ignore cache):", options.force ?? false);
@@ -132,11 +137,12 @@ export async function testCommand(options: { force?: boolean } = {}): Promise<vo
 
       renderSummary(summaryData);
       console.log(chalk.gray(`\n  Cache: ${cachePath}${fromCache ? " (cached)" : ""}`));
+      }
+    } catch (err) {
+      if (process.env.HERMES_DEBUG === "1") {
+        console.error(chalk.red("[hermes:debug] summary error:"), err);
+      }
+      // Summary is best-effort — silently ignore any errors
     }
-  } catch (err) {
-    if (process.env.HERMES_DEBUG === "1") {
-      console.error(chalk.red("[hermes:debug] summary error:"), err);
-    }
-    // Summary is best-effort — silently ignore any errors
   }
 }

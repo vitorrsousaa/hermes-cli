@@ -57,7 +57,8 @@ program
   .command("test")
   .description("Move ticket to DEV Testing and deploy ephemeral environment")
   .option("-f, --force", "Regenerate task summary even if cached")
-  .action(async (options: { force?: boolean }) => {
+  .option("--skip-summary", "Skip AI summary generation and Linear ticket update")
+  .action(async (options: { force?: boolean; skipSummary?: boolean }) => {
     await testCommand(options);
   });
 

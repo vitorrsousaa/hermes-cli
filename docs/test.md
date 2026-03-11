@@ -5,7 +5,7 @@
 ## Synopsis
 
 ```bash
-hermes test [-f|--force]
+hermes test [-f|--force] [--skip-summary]
 ```
 
 ## Description
@@ -14,11 +14,14 @@ Moves the ticket to **DEV Testing** and triggers the ephemeral environment deplo
 
 If `claude-api-key` is configured, also generates an AI-powered task summary from git diffs, updates the Linear ticket title, and displays the summary. The summary is cached by branch name and can be regenerated with `--force`.
 
+**When there is no Claude API key** (or `--skip-summary` is passed), the summary generation and Linear ticket update are skipped. A notice is printed: *"Skipping summary generation and Linear ticket update (no Claude API key)"* or *"Skipping summary generation and Linear ticket update (--skip-summary)"*.
+
 ## Options
 
 | Option | Description |
 |--------|-------------|
 | `-f, --force` | Regenerate task summary even if cached. Ignores existing cache and calls Claude API again. |
+| `--skip-summary` | Skip AI summary generation and Linear ticket title update. Use when you want to run `test` without these optional steps. |
 
 ## Prerequisites
 
@@ -28,7 +31,7 @@ If `claude-api-key` is configured, also generates an AI-powered task summary fro
 
 ## Task summary (optional)
 
-When `claude-api-key` is set via `hermes config set claude-api-key <key>`:
+When `claude-api-key` is set via `hermes config set claude-api-key <key>` (and `--skip-summary` is not used):
 
 1. **Cache check** — If a cached summary exists for the current branch and `--force` is not used, loads from cache.
 2. **Generate** — Otherwise collects diffs from all repos, calls Claude API, and caches the result at `/tmp/hermes-summary-{branch}.txt`.
