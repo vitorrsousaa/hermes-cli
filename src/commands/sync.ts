@@ -42,22 +42,17 @@ export async function syncCommand(options: {
   const stagingBranch = options.stagingBranch ?? "staging";
 
   const current = await getCurrentBranch();
+  const isOnStg = current.endsWith(suffix);
 
-  if (current.endsWith(suffix)) {
-    console.error(
-      chalk.red(`You're already on the staging branch (${current}). Run this from the main branch.`)
-    );
-    process.exit(1);
-  }
+  const mainBranch = isOnStg ? current.slice(0, -suffix.length) : current;
+  const stgBranch = isOnStg ? current : `${current}${suffix}`;
 
-  const stgBranch = `${current}${suffix}`;
-
-  console.log(chalk.bold(`\n  Syncing ${current} → ${stgBranch}\n`));
+  console.log(chalk.bold(`\n  Syncing ${mainBranch} → ${stgBranch}\n`));
 
   try {
-    // 1. Push current branch
-    await runStep(`Push ${current}`, async () => {
-      await execa("git", ["push", "origin", current]);
+    // 1. Push main branch
+    await runStep(`Push ${mainBranch}`, async () => {
+      await execa("git", ["push", "origin", mainBranch]);
     });
 
     // 2. Fetch to get latest remote state
@@ -65,38 +60,49 @@ export async function syncCommand(options: {
       await execa("git", ["fetch", "origin"]);
     });
 
-    // 3. Checkout or create -stg branch
+    // 3. Checkout or create -stg branch (skip if already on it)
     const remoteStg = `origin/${stgBranch}`;
     const stgExistsRemote = await branchExists(remoteStg);
     const stgExistsLocal = await branchExists(stgBranch);
 
-    if (stgExistsRemote || stgExistsLocal) {
-      await runStep(`Checkout ${stgBranch}`, async () => {
-        if (stgExistsLocal) {
-          await execa("git", ["checkout", stgBranch]);
-        } else {
-          await execa("git", ["checkout", "-b", stgBranch, remoteStg]);
-        }
-      });
+    if (!isOnStg) {
+      if (stgExistsRemote || stgExistsLocal) {
+        await runStep(`Checkout ${stgBranch}`, async () => {
+          if (stgExistsLocal) {
+            await execa("git", ["checkout", stgBranch]);
+          } else {
+            await execa("git", ["checkout", "-b", stgBranch, remoteStg]);
+          }
+        });
 
-      // 4. Pull -stg (in case there are remote updates)
-      await runStep(`Pull ${stgBranch}`, async () => {
-        await execa("git", ["pull", "--ff-only", "origin", stgBranch]);
-      });
+        // 4. Pull -stg (in case there are remote updates)
+        await runStep(`Pull ${stgBranch}`, async () => {
+          await execa("git", ["pull", "--no-rebase", "origin", stgBranch]);
+        });
+      } else {
+        await runStep(`Create ${stgBranch}`, async () => {
+          await execa("git", ["checkout", "-b", stgBranch]);
+        });
+      }
     } else {
-      await runStep(`Create ${stgBranch}`, async () => {
-        await execa("git", ["checkout", "-b", stgBranch]);
+      // Already on -stg: pull updates from remote
+      await runStep(`Pull ${stgBranch}`, async () => {
+        await execa("git", ["pull", "--no-rebase", "origin", stgBranch]);
       });
     }
 
     // 5. Merge main branch into -stg
-    await runStep(`Merge ${current} into ${stgBranch}`, async () => {
-      await execa("git", ["merge", current, "-m", `Merge ${current} into ${stgBranch}`]);
+    await runStep(`Merge ${mainBranch} into ${stgBranch}`, async () => {
+      await execa("git", ["merge", mainBranch, "-m", `Merge ${mainBranch} into ${stgBranch}`]);
     });
 
-    // 6. Pull staging into -stg
-    await runStep(`Pull ${stagingBranch} into ${stgBranch}`, async () => {
-      await execa("git", ["pull", "--ff-only", "origin", stagingBranch]);
+    // 6. Merge staging into -stg (squash to avoid divergent branches)
+    await runStep(`Merge ${stagingBranch} into ${stgBranch} (squash)`, async () => {
+      await execa("git", ["merge", "--squash", `origin/${stagingBranch}`]);
+      const { stdout } = await execa("git", ["diff", "--cached", "--name-only"]);
+      if (stdout.trim()) {
+        await execa("git", ["commit", "-m", `Merge ${stagingBranch} into ${stgBranch}`]);
+      }
     });
 
     // 7. Push -stg (use -u to set upstream on first push)
@@ -104,10 +110,12 @@ export async function syncCommand(options: {
       await execa("git", ["push", "-u", "origin", stgBranch]);
     });
 
-    // 8. Switch back to main branch
-    await runStep(`Checkout ${current}`, async () => {
-      await execa("git", ["checkout", current]);
-    });
+    // 8. Switch back to main branch (only if we weren't on it)
+    if (!isOnStg) {
+      await runStep(`Checkout ${mainBranch}`, async () => {
+        await execa("git", ["checkout", mainBranch]);
+      });
+    }
 
     console.log(chalk.green.bold(`\n  Done. ${stgBranch} is synced and pushed.\n`));
   } catch {

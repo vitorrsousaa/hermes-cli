@@ -136,14 +136,14 @@ hermes toggle --suffix -staging
 hermes sync
 ```
 
-Run from your main branch (e.g. `fix/9082`). Syncs all changes to the `-stg` counterpart:
+Run from your main branch (e.g. `fix/9082`) or from the `-stg` branch. Syncs all changes to the `-stg` counterpart:
 
-1. Pushes the current branch
-2. Checkouts or creates `fix/9082-stg`. If it exists, pulls latest
+1. Pushes the main branch
+2. Checkouts or creates `fix/9082-stg`. If it exists, pulls latest (or if already on `-stg`, just pulls)
 3. Merges `fix/9082` into `fix/9082-stg`
-4. Pulls `staging` into `fix/9082-stg`
+4. Merges `staging` into `fix/9082-stg` (squash)
 5. Pushes `fix/9082-stg`
-6. Switches back to `fix/9082`
+6. Switches back to `fix/9082` (only when started from main)
 
 | Flag | Description |
 |------|-------------|
