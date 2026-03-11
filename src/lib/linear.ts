@@ -1,4 +1,6 @@
-import { homedir } from "os";
+import { homedir, tmpdir } from "os";
+import { join } from "path";
+import { writeFile, unlink } from "fs/promises";
 import { execa } from "execa";
 import { HermesError } from "./errors.js";
 import { getCurrentBranch } from "./git.js";
@@ -56,15 +58,17 @@ function parseIssueOutput(issueId: string, output: string): LinearIssue {
     }
   }
 
-  // Extract description (everything after first blank line or "Description" header)
-  const descMatch = output.match(/(?:description|descri[çc][ãa]o):?\s*[\r\n]+([\s\S]*?)(?=\n\n|$)/i);
-  if (descMatch) {
-    description = descMatch[1].trim();
-  } else {
-    const parts = output.split(/\n\n+/);
-    if (parts.length > 1) {
-      description = parts.slice(1).join("\n\n").trim();
-    }
+  // linear issue view format:
+  //   # ISSUE-ID: Title
+  //   [optional **Project:** metadata line]
+  //   [description body — raw markdown]
+  //   ## Parent / ## Attachments / ## Comments  ← CLI-appended, NOT part of description
+  //
+  // Strategy: remove the first line (# title), then capture until the first "## " section.
+  const afterTitle = output.replace(/^[^\n]*\n/, "");
+  const descSectionMatch = afterTitle.match(/^([\s\S]*?)(?=\n## |\n##$|$)/);
+  if (descSectionMatch) {
+    description = descSectionMatch[1].trim();
   }
 
   if (!url && issueId) {
@@ -158,19 +162,41 @@ export async function updateIssueDescription(
   description: string,
   env?: LinearEnv | null
 ): Promise<void> {
+  const tmpFile = join(tmpdir(), `hermes-desc-${issueId}.md`);
   try {
     const execaEnv =
       env
         ? { ...process.env, LINEAR_API_KEY: env.apiKey, LINEAR_TEAM: env.teamId ?? "" }
         : process.env;
+    await writeFile(tmpFile, description, "utf-8");
     await execa(
       "npx",
-      ["@schpet/linear-cli", "issue", "update", issueId, "--description", description],
+      ["@schpet/linear-cli", "issue", "update", issueId, "--description-file", tmpFile],
       { env: execaEnv, cwd: homedir() }
     );
-  } catch (err) {
-    throw new HermesError(
-      `Failed to update ticket description ${issueId}.`
-    );
+  } catch {
+    throw new HermesError(`Failed to update ticket description ${issueId}.`);
+  } finally {
+    await unlink(tmpFile).catch(() => undefined);
   }
+}
+
+/**
+ * Replace the DEVELOPER TESTS section in a Linear description with new test items.
+ * Matches the section from "DEVELOPER TESTS" until the next all-caps section header or end.
+ * If the section is not found, appends it at the end.
+ */
+export function replaceDevTestsSection(description: string, newTests: string[]): string {
+  const newSection = `DEVELOPER TESTS\n${newTests.map((t) => `[ ] ${t}`).join("\n")}`;
+
+  // Match "DEVELOPER TESTS" + everything until the next all-caps section (e.g. "QA TESTS") or end
+  const updated = description.replace(
+    /DEVELOPER TESTS\n[\s\S]*?(?=\n[A-Z][A-Z ]{2,}\n|$)/,
+    newSection + "\n"
+  );
+
+  if (updated !== description) return updated;
+
+  // Section not found — append it
+  return `${description.trimEnd()}\n\nDEVELOPER TESTS\n${newTests.map((t) => `[ ] ${t}`).join("\n")}`;
 }
