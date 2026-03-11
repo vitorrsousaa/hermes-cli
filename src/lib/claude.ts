@@ -4,55 +4,53 @@ const MODEL = "claude-sonnet-4-6";
 
 const SYSTEM_PROMPT = `You are a technical writer generating Linear task templates for a software development team.
 
-Given git diffs and commits from one or more repositories, generate a complete task template following these STRICT rules:
+Given git diffs and commits from one or more repositories, generate a task summary as a JSON object.
 
+STRICT RULES:
 - Output must be fully in English.
-- Always generate the full template.
+- Task title must NOT include the ticket ID — generate a clean, concise title only (e.g. "Add PDF export to reports" not "ENG-1234 Add PDF export").
 - Write using brief, assertive, objective bullet points.
 - Never use subtopics, sublevels, indentation layers, or nested bullets.
-- QA section must be simple and non-technical.
+- QA fields must use simple, non-technical language.
 - Developer Notes must be technical and precise.
 - Developer Tests must be technical and precise.
-- QA Tests must be technical and precise.
-- Must follow formatting compatible with Linear.
+- QA Tests must be functional and user-facing.
 - Must avoid personal names or sensitive personal data.
-- Never use variable names, function names, object names, file names, or any direct code nomenclature inside the template EXCEPT in the Developer Notes section.
-- In the Developer Notes section: do NOT mention file names, project names, or repository names. Write only flat bullet points describing what was technically implemented. Group related changes naturally by concept, not by file or repo.
-- If a technical difficulty or non-obvious constraint was encountered during implementation, add an optional "TECHNICAL DIFFICULTIES" subsection at the end of the Dev Notes.
+- Never use variable names, function names, object names, file names, or any direct code nomenclature EXCEPT in devNotes.
+- In devNotes: flat bullet points by concept, no file/repo names. Group related bullets naturally by concept or behavior.
+- If a technical difficulty or non-obvious constraint was encountered, append a line "TECHNICAL DIFFICULTIES:" followed by a brief bullet at the end of devNotes.
+- Ignore repositories with no changes.
 - Response must be deterministic, cohesive, and standardized.
-- Keep everything concise and assertive.
-- Ignore repositories that had no changes.
 
-Output ONLY the template content below, nothing else:
+Output ONLY valid JSON with exactly this structure — no markdown, no code blocks, no extra text.
 
-TASK TITLE: [AI-generated title — concise, starts with ticket ID if provided, accurately describes what was delivered]
+CRITICAL: JSON escaping rules — inside string values you MUST:
+- Use \\n for newlines (never literal line breaks inside strings)
+- Use \\\\ for backslashes
+- Use \\" for double quotes inside strings
 
-WHAT WAS IMPLEMENTED (DEV NOTES):
-[Flat bullet points. Technical and precise. No file/repo names. Group by concept.]
+{
+  "taskTitle": "concise AI-generated title without ticket ID",
+  "devNotes": "flat bullet points as a single string with - bullets, use \\n for line breaks",
+  "whereToAccess": "simple navigation paths or UI areas for QA as a single string",
+  "howToTest": "clear, non-technical, step-by-step instructions for QA as a single string",
+  "developerTests": ["technical test item 1", "technical test item 2"],
+  "qaTests": ["functional user-facing test item 1", "functional user-facing test item 2"],
+  "taskSummary": "1-2 paragraph plain English summary suitable for a non-technical stakeholder"
+}`;
 
-WHERE TO ACCESS THE IMPROVEMENTS (QA):
-[Simple navigation paths or UI areas for QA. Non-technical.]
-
-HOW TO TEST IT (QA):
-[Clear, non-technical, step-by-step instructions for QA.]
-
-DEVELOPER TESTS
-[ ] [Technical test item]
-[ ] ...
-
-QA TESTS
-[ ] [Functional/user-facing test item]
-[ ] ...
-
-----------------------------------------
-TASK SUMMARY
-----------------------------------------
-Task Title: [Same as above]
-
-Summary of Change: [1-2 concise paragraph(s) suitable for a non-technical stakeholder. No file names, no code names.]`;
+export interface TaskSummaryData {
+  taskTitle: string;
+  devNotes: string;
+  whereToAccess: string;
+  howToTest: string;
+  developerTests: string[];
+  qaTests: string[];
+  taskSummary: string;
+}
 
 export interface GenerateTaskSummaryResult {
-  text: string;
+  data: TaskSummaryData;
   inputTokens: number;
   outputTokens: number;
 }
@@ -78,13 +76,29 @@ export async function generateTaskSummary(
     messages: [{ role: "user", content: userPrompt }],
   });
 
-  const text = response.content
+  let raw = response.content
     .filter((block) => block.type === "text")
     .map((block) => (block as { type: "text"; text: string }).text)
     .join("");
 
+  // Strip markdown code fence if present
+  const fenceMatch = raw.match(/^```(?:json)?\s*\n?([\s\S]*?)\n?```/);
+  if (fenceMatch) {
+    raw = fenceMatch[1].trim();
+  }
+
+  // Repair common JSON issues from LLM output: trailing backslash + newline (invalid)
+  raw = raw.replace(/\\\s*\n\s*/g, "\\n");
+
+  let data: TaskSummaryData;
+  try {
+    data = JSON.parse(raw) as TaskSummaryData;
+  } catch {
+    throw new Error(`Claude returned invalid JSON:\n${raw.slice(0, 500)}`);
+  }
+
   return {
-    text,
+    data,
     inputTokens: response.usage.input_tokens,
     outputTokens: response.usage.output_tokens,
   };

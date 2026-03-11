@@ -8,7 +8,7 @@
 
 2. **`hermes deployfe`** — Triggers "Deploy Feature Environment" workflow on GitHub Actions (ephemeral environment).
 
-3. **`hermes test`** — Triggers deploy + moves ticket to "DEV Testing", copies workflow URL to clipboard.
+3. **`hermes test`** — Triggers deploy + moves ticket to "DEV Testing", copies workflow URL to clipboard. Optionally generates AI task summary (see [test.md](test.md)).
 
 4. **`hermes prc`** — Creates PR(s) to stg/main/both with title `[TICKET-ID] Title`, uses context or branch.
 
@@ -18,6 +18,7 @@
 
 ## Utility commands (outside main flow)
 
+- **`hermes summary`** — AI task summary from git diffs (see [summary.md](summary.md))
 - **`hermes branch`** — Branch name + clipboard
 - **`hermes toggle`** — Switch main ↔ -stg
 - **`hermes sync`** — Sync main → -stg

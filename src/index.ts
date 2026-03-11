@@ -56,8 +56,9 @@ program
 program
   .command("test")
   .description("Move ticket to DEV Testing and deploy ephemeral environment")
-  .action(async () => {
-    await testCommand();
+  .option("-f, --force", "Regenerate task summary even if cached")
+  .action(async (options: { force?: boolean }) => {
+    await testCommand(options);
   });
 
 program

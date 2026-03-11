@@ -19,6 +19,7 @@
 | `update` | update.ts | — | No | Merge main/staging into branch |
 | `push` | push.ts | — | No | Push current branch |
 | `check` | check.ts | — | No | Typecheck, lint, prettier |
+| `summary` | summary.ts | claude-api-key | Optional | AI task summary from diffs |
 
 ## Per-command details
 
@@ -38,10 +39,12 @@
 
 ### test
 
-- `hermes test`
+- `hermes test [-f|--force]`
 - Triggers deploy with branch from context
 - Moves ticket to "DEV Testing"
 - Copies workflow URL to clipboard
+- Optionally generates AI task summary (if `claude-api-key` set); `-f` regenerates even if cached
+- See [../../docs/test.md](../../docs/test.md)
 
 ### stop
 
@@ -104,3 +107,10 @@
 - `hermes check`
 - Runs: typecheck, lint:fix, prettier:fix
 - If lint/prettier modify files, auto-commits them
+
+### summary
+
+- `hermes summary [-f|--force]`
+- Generates AI task summary from git diffs (requires `claude-api-key`)
+- `-f`: regenerate even if cached
+- See [../../docs/summary.md](../../docs/summary.md)

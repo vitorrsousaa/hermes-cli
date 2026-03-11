@@ -141,6 +141,18 @@ export async function getIssueFromBranch(): Promise<{
   }
 }
 
+export async function updateIssueTitle(
+  issueId: string,
+  title: string,
+  env?: LinearEnv | null
+): Promise<void> {
+  try {
+    await runLinear(["issue", "update", issueId, "--title", title], env ?? undefined);
+  } catch {
+    throw new HermesError(`Failed to update ticket title ${issueId}.`);
+  }
+}
+
 export async function updateIssueDescription(
   issueId: string,
   description: string,

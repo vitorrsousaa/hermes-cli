@@ -2,22 +2,48 @@ import chalk from "chalk";
 import { readFile, writeFile } from "fs/promises";
 import { getClaudeApiKey } from "../lib/config.js";
 import { collectDiffs, buildSummaryCachePath } from "../lib/diff.js";
-import { generateTaskSummary } from "../lib/claude.js";
+import { generateTaskSummary, type TaskSummaryData } from "../lib/claude.js";
 import { HermesError } from "../lib/errors.js";
 import { withSpinner } from "../lib/spinner.js";
 import { loadContext } from "../lib/context.js";
 import { getCurrentBranch } from "../lib/git.js";
+
+function renderSummary(data: TaskSummaryData): void {
+  console.log(chalk.bold.cyan("\nTASK TITLE"));
+  console.log(data.taskTitle);
+
+  console.log(chalk.bold.cyan("\nWHAT WAS IMPLEMENTED (DEV NOTES)"));
+  console.log(data.devNotes);
+
+  console.log(chalk.bold.cyan("\nWHERE TO ACCESS (QA)"));
+  console.log(data.whereToAccess);
+
+  console.log(chalk.bold.cyan("\nHOW TO TEST IT (QA)"));
+  console.log(data.howToTest);
+
+  console.log(chalk.bold.cyan("\nDEVELOPER TESTS"));
+  for (const item of data.developerTests) {
+    console.log(`[ ] ${item}`);
+  }
+
+  console.log(chalk.bold.cyan("\nQA TESTS"));
+  for (const item of data.qaTests) {
+    console.log(`[ ] ${item}`);
+  }
+
+  console.log(chalk.bold.cyan("\nTASK SUMMARY"));
+  console.log(data.taskSummary);
+}
 
 export async function summaryCommand(options: { force?: boolean } = {}): Promise<void> {
   const apiKey = await getClaudeApiKey();
   if (!apiKey) {
     throw new HermesError(
       "Claude API key not configured.",
-      'Run: hermes config set claude-api-key <your-key>'
+      "Run: hermes config set claude-api-key <your-key>"
     );
   }
 
-  // Load context (optional — used for ticket ID/title injection)
   let context: { ticketId?: string; ticketTitle?: string } | undefined;
   try {
     const ctx = await loadContext();
@@ -29,16 +55,16 @@ export async function summaryCommand(options: { force?: boolean } = {}): Promise
   const branch = await getCurrentBranch();
   const cachePath = buildSummaryCachePath(branch);
 
-  // Return cached if available and not forcing
   if (!options.force) {
     try {
       const cached = await readFile(cachePath, "utf-8");
-      console.log(chalk.bold("\n--- Task Summary (cached) ---\n"));
-      console.log(cached);
+      const data = JSON.parse(cached) as TaskSummaryData;
+      console.log(chalk.bold("\n--- Task Summary (cached) ---"));
+      renderSummary(data);
       console.log(chalk.gray(`\n  Cache: ${cachePath}`));
       return;
     } catch {
-      // No cache — proceed to generate
+      // No cache or invalid JSON — proceed to generate
     }
   }
 
@@ -46,15 +72,15 @@ export async function summaryCommand(options: { force?: boolean } = {}): Promise
     collectDiffs()
   );
 
-  const { text, inputTokens, outputTokens } = await withSpinner(
+  const { data, inputTokens, outputTokens } = await withSpinner(
     "Generating summary with Claude...",
     () => generateTaskSummary(aggregateText, apiKey, context)
   );
 
-  await writeFile(cachePath, text, "utf-8");
+  await writeFile(cachePath, JSON.stringify(data, null, 2), "utf-8");
 
-  console.log(chalk.bold("\n--- Task Summary ---\n"));
-  console.log(text);
+  console.log(chalk.bold("\n--- Task Summary ---"));
+  renderSummary(data);
   console.log(
     chalk.gray(
       `\n  Tokens: ${inputTokens.toLocaleString()} in / ${outputTokens.toLocaleString()} out`

@@ -16,6 +16,8 @@ Hermes is a CLI that automates the development workflow between **Linear**, **Gi
 | [docs/context.md](docs/context.md) | `.hermes-context.json` file |
 | [docs/conventions.md](docs/conventions.md) | Branch conventions, defaults, integrations |
 | [docs/development.md](docs/development.md) | Development, debug, patterns, adding commands |
+| [docs/test.md](docs/test.md) | `hermes test` command |
+| [docs/summary.md](docs/summary.md) | `hermes summary` command |
 | [src/claude.md](src/claude.md) | Source code structure |
 | [src/commands/claude.md](src/commands/claude.md) | Commands reference |
 | [src/lib/claude.md](src/lib/claude.md) | Lib utilities |
