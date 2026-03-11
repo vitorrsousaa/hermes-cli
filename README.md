@@ -63,11 +63,8 @@ hermes test
 ```
 
 - Triggers the deploy workflow on GitHub Actions
-- Generates test information with Claude Code
-- Updates the ticket description on Linear
-- Moves to "DEV Testing"
-- Waits for deploy completion (polling with exponential backoff)
-- Extracts the ephemeral environment URL from logs
+- Moves ticket to "DEV Testing"
+- Copies the workflow run URL to clipboard
 
 ### 4. Create pull request
 

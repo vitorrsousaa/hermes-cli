@@ -3,6 +3,7 @@ import { checkPrerequisites } from "../lib/prerequisites.js";
 import { getCurrentBranch } from "../lib/git.js";
 import {
   triggerWorkflow,
+  copyToClipboard,
   type TriggerWorkflowResult,
 } from "../lib/github.js";
 import { DEFAULTS } from "../lib/defaults.js";
@@ -87,6 +88,8 @@ export async function deployCommand(options: DeployOptions): Promise<void> {
     enabledSocketio,
   });
 
+  await copyToClipboard(url);
   console.log(chalk.green("✓ Workflow triggered"));
-  console.log(chalk.gray(`  ${url}\n`));
+  console.log(chalk.gray(`  ${url}`));
+  console.log(chalk.gray("  Copied to clipboard\n"));
 }

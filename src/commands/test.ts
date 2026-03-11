@@ -1,33 +1,18 @@
 import chalk from "chalk";
-import { loadContext, saveContext } from "../lib/context.js";
+import { loadContext } from "../lib/context.js";
 import { DEFAULTS } from "../lib/defaults.js";
-import { getRunLogs, waitForRun } from "../lib/github.js";
-import {
-  updateIssueStatus
-} from "../lib/linear.js";
+import { copyToClipboard } from "../lib/github.js";
+import { updateIssueStatus } from "../lib/linear.js";
 import { checkPrerequisites } from "../lib/prerequisites.js";
 import { withSpinner } from "../lib/spinner.js";
 import { triggerDeployFeatureWorkflow } from "./deploy.js";
-
-function extractEphemeralUrlFromLogs(logs: string): string | null {
-  const urlPatterns = [
-    /(?:preview|environment|url|deploy):\s*(https:\/\/[^\s"'<>]+)/i,
-    /(https:\/\/[a-zA-Z0-9.-]+\.(?:vercel\.app|netlify\.app|onrender\.com|railway\.app)[^\s"'<>]*)/i,
-    /(https:\/\/[a-zA-Z0-9.-]+--[a-zA-Z0-9-]+\.(?:web\.app|pages\.dev)[^\s"'<>]*)/i,
-  ];
-  for (const pattern of urlPatterns) {
-    const match = logs.match(pattern);
-    if (match) return match[1].trim();
-  }
-  return null;
-}
 
 export async function testCommand(): Promise<void> {
   await checkPrerequisites(["gh", "linear"]);
   const context = await loadContext();
   const { ticketId, branch } = context;
 
-  const { runId, url: runUrl } = await withSpinner(
+  const { url: runUrl } = await withSpinner(
     "Triggering ephemeral environment...",
     () =>
       triggerDeployFeatureWorkflow({
@@ -40,55 +25,12 @@ export async function testCommand(): Promise<void> {
       })
   );
 
-  console.log(chalk.gray(`\nRun: ${runUrl}\n`));
-
-  let testInfo = "";
-  // try {
-  //   testInfo = await withSpinner(
-  //     "Generating test info with Claude Code...",
-  //     async () => {
-  //       const [cmd, ...args] = DEFAULTS.claudeCode.command.split(/\s+/);
-  //       const result = await execa(cmd, args, { stdout: "pipe" });
-  //       return result.stdout ?? "";
-  //     }
-  //   );
-  // } catch (err) {
-  //   console.log(chalk.yellow("Warning: Claude Code failed. Continuing without test info."));
-  // }
-
-  // if (testInfo) {
-  //   await withSpinner("Updating ticket on Linear...", async () => {
-  //     const issue = await fetchIssue(ticketId);
-  //     const separator = issue.description ? "\n\n" : "";
-  //     const updatedDescription = `${issue.description}${separator}## Test Information\n\n${testInfo}`;
-  //     await updateIssueDescription(ticketId, updatedDescription);
-  //   });
-  // }
-
   await withSpinner("Moving ticket to DEV Testing...", () =>
     updateIssueStatus(ticketId, DEFAULTS.linear.statusDevTesting)
   );
 
-  const runResult = await withSpinner("Waiting for deploy...", () =>
-    waitForRun(runId)
-  );
-
-  if (runResult.conclusion !== "success") {
-    console.log(chalk.red(`\nDeploy failed (${runResult.conclusion})`));
-    console.log(chalk.gray(`Details: ${runResult.url}`));
-    process.exit(1);
-  }
-
-  const logs = await getRunLogs(runId);
-  const ephemeralUrl = extractEphemeralUrlFromLogs(logs);
-
-  context.ephemeralEnvUrl = ephemeralUrl;
-  await saveContext(context);
-
-  console.log(chalk.green("\n✓ Ephemeral environment available"));
-  if (ephemeralUrl) {
-    console.log(chalk.cyan(`  ${ephemeralUrl}`));
-  } else {
-    console.log(chalk.yellow("  URL not found in logs. Please check manually."));
-  }
+  await copyToClipboard(runUrl);
+  console.log(chalk.green("\n✓ Workflow triggered"));
+  console.log(chalk.gray(`  ${runUrl}`));
+  console.log(chalk.gray("  Copied to clipboard\n"));
 }
