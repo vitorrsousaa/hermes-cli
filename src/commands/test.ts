@@ -1,8 +1,8 @@
 import chalk from "chalk";
 import { execa } from "execa";
 import { checkPrerequisites } from "../lib/prerequisites.js";
-import { loadConfig } from "../config.js";
 import { loadContext, saveContext } from "../lib/context.js";
+import { DEFAULTS } from "../lib/defaults.js";
 import {
   fetchIssue,
   updateIssueStatus,
@@ -30,14 +30,13 @@ function extractEphemeralUrlFromLogs(logs: string): string | null {
 
 export async function testCommand(): Promise<void> {
   await checkPrerequisites(["gh", "linear"]);
-  const config = await loadConfig();
   const context = await loadContext();
   const { ticketId } = context;
 
   const { runId, url: runUrl } = await withSpinner(
     "Triggering ephemeral environment...",
     () =>
-      triggerWorkflow(config.github.deployWorkflow, {
+      triggerWorkflow(DEFAULTS.github.deployWorkflow, {
         branch: context.branch,
       })
   );
@@ -49,7 +48,7 @@ export async function testCommand(): Promise<void> {
     testInfo = await withSpinner(
       "Generating test info with Claude Code...",
       async () => {
-        const [cmd, ...args] = config.claudeCode.command.split(/\s+/);
+        const [cmd, ...args] = DEFAULTS.claudeCode.command.split(/\s+/);
         const result = await execa(cmd, args, { stdout: "pipe" });
         return result.stdout ?? "";
       }
@@ -58,16 +57,15 @@ export async function testCommand(): Promise<void> {
     console.log(chalk.yellow("Warning: Claude Code failed. Continuing without test info."));
   }
 
-  const linearEnv = { apiKey: config.linear.apiKey, teamId: config.linear.teamId };
   if (testInfo) {
     await withSpinner("Updating ticket on Linear...", async () => {
-      const issue = await fetchIssue(ticketId, linearEnv);
+      const issue = await fetchIssue(ticketId);
       const separator = issue.description ? "\n\n" : "";
       const updatedDescription = `${issue.description}${separator}## Test Information\n\n${testInfo}`;
-      await updateIssueDescription(ticketId, updatedDescription, linearEnv);
+      await updateIssueDescription(ticketId, updatedDescription);
     });
     await withSpinner("Moving ticket to Dev Testing...", () =>
-      updateIssueStatus(ticketId, config.linear.statusDevTesting, linearEnv)
+      updateIssueStatus(ticketId, DEFAULTS.linear.statusDevTesting)
     );
   }
 

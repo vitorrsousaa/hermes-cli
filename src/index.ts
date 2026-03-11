@@ -1,7 +1,6 @@
 import { Command } from "commander";
 import chalk from "chalk";
 import { HermesError } from "./lib/errors.js";
-import { configCommand } from "./commands/config.js";
 import { startCommand } from "./commands/start.js";
 import { testCommand } from "./commands/test.js";
 import { stopCommand } from "./commands/stop.js";
@@ -19,13 +18,6 @@ program
   .name("hermes")
   .description("CLI to automate the development workflow between Linear, GitHub, and Slack")
   .version("0.1.0");
-
-program
-  .command("config")
-  .description("Configure hermes (Linear, GitHub, Slack)")
-  .action(async () => {
-    await configCommand();
-  });
 
 program
   .command("start <ticket-id>")

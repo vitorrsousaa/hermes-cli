@@ -1,3 +1,4 @@
+import { homedir } from "os";
 import { execa } from "execa";
 import { HermesError } from "./errors.js";
 
@@ -15,6 +16,7 @@ async function runLinear(
     : process.env;
   const result = await execa("npx", ["@schpet/linear-cli", ...args], {
     env: execaEnv,
+    cwd: homedir(),
   });
   return { stdout: result.stdout ?? "", stderr: result.stderr ?? "" };
 }
@@ -73,16 +75,16 @@ function parseIssueOutput(issueId: string, output: string): LinearIssue {
 
 export async function fetchIssue(
   issueId: string,
-  env?: LinearEnv
+  env?: LinearEnv | null
 ): Promise<LinearIssue> {
   try {
-    const { stdout } = await runLinear(["issue", "view", issueId], env);
+    const { stdout } = await runLinear(["issue", "view", issueId], env ?? undefined);
     return parseIssueOutput(issueId, stdout);
   } catch (err) {
     const msg =
       process.env.HERMES_DEBUG === "1" && err instanceof Error
         ? err.message
-        : "Check if the Linear CLI is authenticated (linear auth) or if the API key in hermes config is correct.";
+        : "Run linear auth first to authenticate with Linear.";
     throw new HermesError(
       `Failed to fetch ticket ${issueId}.`,
       msg
@@ -93,10 +95,10 @@ export async function fetchIssue(
 export async function updateIssueStatus(
   issueId: string,
   status: string,
-  env?: LinearEnv
+  env?: LinearEnv | null
 ): Promise<void> {
   try {
-    await runLinear(["issue", "update", issueId, "--state", status], env);
+    await runLinear(["issue", "update", issueId, "--state", status], env ?? undefined);
   } catch (err) {
     throw new HermesError(
       `Failed to update ticket status ${issueId}.`,
@@ -106,22 +108,33 @@ export async function updateIssueStatus(
 }
 
 /**
- * Get issue ID and title from current branch using linear-cli.
- * Extracts from branch name (e.g. feat/ENG-123, fix/9082-stg).
+ * Extract issue ID from branch name (e.g. feat/ENG-123, fix/9082-stg).
  */
-export async function getIssueFromBranch(): Promise<{ id: string; title: string; url: string } | null> {
+export function extractIssueIdFromBranch(branch: string): string | null {
+  const match = branch.replace(/-stg$/, "").match(/^(?:feat|fix)\/(.+)$/);
+  return match?.[1]?.trim() ?? null;
+}
+
+/**
+ * Get issue ID and title from current branch.
+ * Extracts ID from branch name, fetches title via Linear API (uses linear auth).
+ */
+export async function getIssueFromBranch(): Promise<{
+  id: string;
+  title: string;
+  url: string;
+} | null> {
+  const { stdout } = await execa("git", ["rev-parse", "--abbrev-ref", "HEAD"]);
+  const branch = stdout?.trim() ?? "";
+  const ticketId = extractIssueIdFromBranch(branch);
+  if (!ticketId) return null;
+
   try {
-    const { stdout: id } = await execa("npx", ["@schpet/linear-cli", "issue", "id"]);
-    const ticketId = id?.trim();
-    if (!ticketId) return null;
-
-    const { stdout: title } = await execa("npx", ["@schpet/linear-cli", "issue", "title"]);
-    const ticketTitle = title?.trim() || ticketId;
-
+    const issue = await fetchIssue(ticketId);
     return {
-      id: ticketId,
-      title: ticketTitle,
-      url: `https://linear.app/issue/${ticketId}`,
+      id: issue.id,
+      title: issue.title,
+      url: issue.url,
     };
   } catch {
     return null;
@@ -131,16 +144,17 @@ export async function getIssueFromBranch(): Promise<{ id: string; title: string;
 export async function updateIssueDescription(
   issueId: string,
   description: string,
-  env?: LinearEnv
+  env?: LinearEnv | null
 ): Promise<void> {
   try {
-    const execaEnv = env
-      ? { ...process.env, LINEAR_API_KEY: env.apiKey, LINEAR_TEAM: env.teamId ?? "" }
-      : process.env;
+    const execaEnv =
+      env
+        ? { ...process.env, LINEAR_API_KEY: env.apiKey, LINEAR_TEAM: env.teamId ?? "" }
+        : process.env;
     await execa(
       "npx",
       ["@schpet/linear-cli", "issue", "update", issueId, "--description", description],
-      { env: execaEnv }
+      { env: execaEnv, cwd: homedir() }
     );
   } catch (err) {
     throw new HermesError(

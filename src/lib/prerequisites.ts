@@ -1,3 +1,4 @@
+import { homedir } from "os";
 import { execa } from "execa";
 import { HermesError } from "./errors.js";
 
@@ -15,7 +16,9 @@ export async function checkPrerequisites(
   for (const cli of required) {
     try {
       if (cli === "linear") {
-        await execa("npx", ["@schpet/linear-cli", "--version"]);
+        await execa("npx", ["@schpet/linear-cli", "--version"], {
+          cwd: homedir(),
+        });
       } else {
         await execa(cli, ["--version"]);
       }

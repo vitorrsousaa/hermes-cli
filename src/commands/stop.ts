@@ -1,13 +1,12 @@
 import chalk from "chalk";
 import { checkPrerequisites } from "../lib/prerequisites.js";
-import { loadConfig } from "../config.js";
 import { loadContext, saveContext } from "../lib/context.js";
 import { triggerWorkflow } from "../lib/github.js";
+import { DEFAULTS } from "../lib/defaults.js";
 import { withSpinner } from "../lib/spinner.js";
 
 export async function stopCommand(): Promise<void> {
   await checkPrerequisites(["gh"]);
-  const config = await loadConfig();
   const context = await loadContext();
 
   if (!context.ephemeralEnvUrl) {
@@ -16,7 +15,7 @@ export async function stopCommand(): Promise<void> {
   }
 
   await withSpinner("Tearing down ephemeral environment...", () =>
-    triggerWorkflow(config.github.destroyWorkflow, { branch: context.branch })
+    triggerWorkflow(DEFAULTS.github.destroyWorkflow, { branch: context.branch })
   );
 
   context.ephemeralEnvUrl = null;

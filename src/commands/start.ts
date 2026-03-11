@@ -1,6 +1,5 @@
 import chalk from "chalk";
 import { execa } from "execa";
-import { loadConfig } from "../config.js";
 import {
   ensureGitignore,
   getRepoRoot,
@@ -9,6 +8,7 @@ import {
 } from "../lib/context.js";
 import { fetchIssue, updateIssueStatus } from "../lib/linear.js";
 import { checkPrerequisites } from "../lib/prerequisites.js";
+import { DEFAULTS } from "../lib/defaults.js";
 import { withSpinner } from "../lib/spinner.js";
 
 export async function startCommand(
@@ -16,11 +16,8 @@ export async function startCommand(
   options: { type?: string }
 ): Promise<void> {
   await checkPrerequisites(["gh", "linear"]);
-  const config = await loadConfig();
-
-  const linearEnv = { apiKey: config.linear.apiKey, teamId: config.linear.teamId };
   const issue = await withSpinner("Fetching ticket...", () =>
-    fetchIssue(ticketId, linearEnv)
+    fetchIssue(ticketId)
   );
 
   console.log(chalk.cyan(`\n${issue.title}`));
@@ -28,7 +25,7 @@ export async function startCommand(
   console.log(chalk.gray(`Status: ${issue.status}\n`));
 
   await withSpinner("Moving ticket to In Progress...", () =>
-    updateIssueStatus(ticketId, config.linear.statusInProgress, linearEnv)
+    updateIssueStatus(ticketId, DEFAULTS.linear.statusInProgress)
   );
 
   const type = options.type === "feat" ? "feat" : "fix";

@@ -24,24 +24,9 @@ npm run build && npm link
   linear auth
   ```
 
+  Run `linear auth` first — hermes uses the Linear CLI's stored credentials.
+
 - **Slack CLI** (optional, for `hermes review`): [https://api.slack.com/automation/cli](https://api.slack.com/automation/cli)
-
-## Setup
-
-Run the initial configuration:
-
-```bash
-hermes config
-```
-
-The wizard will ask for:
-
-- Linear API key
-- Linear team ID
-
-Other values (status, Slack channel, etc.) use defaults. Customization will be implemented in the future.
-
-Configuration is saved at `~/.hermes/config.json`.
 
 ## Full Workflow
 
@@ -89,7 +74,7 @@ hermes prc -d
 hermes prc -t main -d
 ```
 
-Creates PR(s) using ticket info from context (`.hermes-context.json`) or from the current branch via Linear CLI:
+Creates PR(s) using ticket info from context (`.hermes-context.json`) or from the current branch name
 
 | Flag | Short | Description |
 |------|-------|-------------|
@@ -172,30 +157,6 @@ Run from your main branch (e.g. `fix/9082`) or from the `-stg` branch. Syncs all
 |------|-------------|
 | `--suffix <string>` | Custom staging suffix (default: `-stg`) |
 | `--staging <branch>` | Remote branch to pull from (default: `staging`) |
-
-## Configuration Reference
-
-```json
-{
-  "linear": {
-    "apiKey": "...",
-    "teamId": "...",
-    "statusInProgress": "In Progress",
-    "statusDevTesting": "DEV Testing",
-    "statusInReview": "Ready for QA"
-  },
-  "github": {
-    "deployWorkflow": "deploy-ephemeral.yml",
-    "destroyWorkflow": "destroy-ephemeral.yml"
-  },
-  "slack": {
-    "channel": "#review"
-  },
-  "claudeCode": {
-    "command": "claude run test-info"
-  }
-}
-```
 
 ## Development
 
