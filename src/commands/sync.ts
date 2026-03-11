@@ -78,18 +78,14 @@ export async function syncCommand(options: {
       });
     }
 
-    // 5. Merge main branch into -stg
+    // 5. Merge main branch into -stg (brings fix commits)
     await runStep(`Merge ${mainBranch} into ${stgBranch}`, async () => {
       await execa("git", ["merge", mainBranch, "-m", `Merge ${mainBranch} into ${stgBranch}`]);
     });
 
-    // 6. Merge staging into -stg (squash to avoid divergent branches)
-    await runStep(`Merge ${stagingBranch} into ${stgBranch} (squash)`, async () => {
-      await execa("git", ["merge", "--squash", `origin/${stagingBranch}`]);
-      const { stdout } = await execa("git", ["diff", "--cached", "--name-only"]);
-      if (stdout.trim()) {
-        await execa("git", ["commit", "-m", `Merge ${stagingBranch} into ${stgBranch}`]);
-      }
+    // 6. Merge staging into -stg (normal merge, not squash - squash can bring unrelated files from staging's history)
+    await runStep(`Merge ${stagingBranch} into ${stgBranch}`, async () => {
+      await execa("git", ["merge", `origin/${stagingBranch}`, "-m", `Merge ${stagingBranch} into ${stgBranch}`]);
     });
 
     // 7. Push -stg (use -u to set upstream on first push)

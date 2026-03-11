@@ -175,7 +175,7 @@ Run from your main branch (e.g. `fix/9082`) or from the `-stg` branch. Syncs all
 1. Pushes the main branch
 2. Checkouts or creates `fix/9082-stg`. If it exists, pulls latest (or if already on `-stg`, just pulls)
 3. Merges `fix/9082` into `fix/9082-stg`
-4. Merges `staging` into `fix/9082-stg` (squash)
+4. Merges `staging` into `fix/9082-stg` (normal merge; squash was removed as it could bring unrelated files)
 5. Pushes `fix/9082-stg`
 6. Switches back to `fix/9082` (only when started from main)
 
@@ -183,6 +183,10 @@ Run from your main branch (e.g. `fix/9082`) or from the `-stg` branch. Syncs all
 |------|-------------|
 | `--suffix <string>` | Custom staging suffix (default: `-stg`) |
 | `--staging <branch>` | Remote branch to pull from (default: `staging`) |
+
+## Git Conventions
+
+**Rebase is prohibited.** Do not use `git rebase` or `git pull --rebase` in workflows involving Hermes branches. Hermes uses merge-based workflows; rebase can cause history divergence and inconsistent PR diffs.
 
 ## Development
 
