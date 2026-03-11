@@ -10,6 +10,7 @@ import { reviewCommand } from "./commands/review.js";
 import { branchCommand } from "./commands/branch.js";
 import { checkCommand } from "./commands/check.js";
 import { toggleCommand } from "./commands/toggle.js";
+import { syncCommand } from "./commands/sync.js";
 
 const program = new Command();
 
@@ -85,6 +86,18 @@ program
   .option("--suffix <string>", "Staging branch suffix", "-stg")
   .action(async (options: { suffix?: string }) => {
     await toggleCommand(options);
+  });
+
+program
+  .command("sync")
+  .description("Sync current branch to its -stg counterpart (push, merge, pull staging, push -stg)")
+  .option("--suffix <string>", "Staging branch suffix", "-stg")
+  .option("--staging <branch>", "Remote staging branch to pull from", "staging")
+  .action(async (options: { suffix?: string; staging?: string }) => {
+    await syncCommand({
+      suffix: options.suffix,
+      stagingBranch: options.staging,
+    });
   });
 
 async function main(): Promise<void> {

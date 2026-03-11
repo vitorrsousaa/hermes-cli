@@ -130,6 +130,26 @@ Example with custom suffix:
 hermes toggle --suffix -staging
 ```
 
+### Sync branch to staging
+
+```bash
+hermes sync
+```
+
+Run from your main branch (e.g. `fix/9082`). Syncs all changes to the `-stg` counterpart:
+
+1. Pushes the current branch
+2. Checkouts or creates `fix/9082-stg`. If it exists, pulls latest
+3. Merges `fix/9082` into `fix/9082-stg`
+4. Pulls `staging` into `fix/9082-stg`
+5. Pushes `fix/9082-stg`
+6. Switches back to `fix/9082`
+
+| Flag | Description |
+|------|-------------|
+| `--suffix <string>` | Custom staging suffix (default: `-stg`) |
+| `--staging <branch>` | Remote branch to pull from (default: `staging`) |
+
 ## Configuration Reference
 
 ```json
