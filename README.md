@@ -138,6 +138,14 @@ Example with custom suffix:
 hermes toggle --suffix -staging
 ```
 
+### Push current branch
+
+```bash
+hermes push
+```
+
+Pushes the current branch to origin. No need to type the branch name.
+
 ### Update branch with main or staging
 
 ```bash

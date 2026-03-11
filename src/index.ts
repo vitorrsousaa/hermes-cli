@@ -12,6 +12,7 @@ import { toggleCommand } from "./commands/toggle.js";
 import { syncCommand } from "./commands/sync.js";
 import { prCreateCommand } from "./commands/pr-create.js";
 import { updateCommand } from "./commands/update.js";
+import { pushCommand } from "./commands/push.js";
 
 const program = new Command();
 
@@ -110,6 +111,13 @@ program
       process.exit(1);
     }
     await updateCommand({ target: target ?? "stg" });
+  });
+
+program
+  .command("push")
+  .description("Push current branch to origin (no need to type the branch name)")
+  .action(async () => {
+    await pushCommand();
   });
 
 program
