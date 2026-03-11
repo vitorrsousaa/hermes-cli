@@ -14,6 +14,8 @@ import { updateCommand } from "./commands/update.js";
 import { pushCommand } from "./commands/push.js";
 import { deployCommand } from "./commands/deploy.js";
 import { readyCommand } from "./commands/ready.js";
+import { configSetCommand, configGetCommand } from "./commands/config.js";
+import { summaryCommand } from "./commands/summary.js";
 
 const program = new Command();
 
@@ -153,6 +155,32 @@ program
     });
   });
 
+const configCmd = program
+  .command("config")
+  .description("Manage Hermes configuration");
+
+configCmd
+  .command("set <key> <value>")
+  .description("Set a configuration value")
+  .action(async (key: string, value: string) => {
+    await configSetCommand(key, value);
+  });
+
+configCmd
+  .command("get <key>")
+  .description("Get a configuration value")
+  .action(async (key: string) => {
+    await configGetCommand(key);
+  });
+
+program
+  .command("summary")
+  .description("Generate AI-powered task summary from git diffs")
+  .option("-f, --force", "Regenerate even if cached")
+  .action(async (options: { force?: boolean }) => {
+    await summaryCommand(options);
+  });
+
 async function main(): Promise<void> {
   try {
     await program.parseAsync();
@@ -167,7 +195,8 @@ async function main(): Promise<void> {
     if (process.env.HERMES_DEBUG === "1") {
       console.error(err);
     } else {
-      console.error(chalk.red("Unexpected error."));
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error(chalk.red(msg || "Unexpected error."));
     }
     process.exit(1);
   }
