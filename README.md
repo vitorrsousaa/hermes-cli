@@ -78,6 +78,8 @@ hermes prc -t main -d
 
 Creates PR(s) with title `[TICKET-ID] Title` and pre-filled template. Uses ticket info from context (`.hermes-context.json`) or from the current branch name. Copies URL to clipboard and saves `prUrl` and `prNumber` to context.
 
+For `-t stg`: uses the branch with `-stg` suffix (e.g. `feat/ENG-123-stg`). If it doesn't exist, creates it from the current branch and pushes before opening the PR.
+
 | Flag | Short | Description |
 |------|-------|-------------|
 | `--target <stg\|main\|both>` | `-t` | Target branch: stg (default), main, or both |
