@@ -109,6 +109,27 @@ hermes branch -sc      # shorthand: staging suffix + copy
 
 Useful as a shortcut instead of terminal aliases or scripts.
 
+### Toggle between main and staging branch
+
+```bash
+hermes toggle
+```
+
+Switches between the main branch and its staging counterpart (`-stg` suffix):
+
+- On `feat/ENG-123` → checks out `feat/ENG-123-stg`
+- On `feat/ENG-123-stg` → checks out `feat/ENG-123`
+
+| Flag | Description |
+|------|-------------|
+| `--suffix <string>` | Custom staging suffix (default: `-stg`) |
+
+Example with custom suffix:
+
+```bash
+hermes toggle --suffix -staging
+```
+
 ## Configuration Reference
 
 ```json

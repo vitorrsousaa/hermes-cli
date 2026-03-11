@@ -9,6 +9,7 @@ import { prCommand } from "./commands/pr.js";
 import { reviewCommand } from "./commands/review.js";
 import { branchCommand } from "./commands/branch.js";
 import { checkCommand } from "./commands/check.js";
+import { toggleCommand } from "./commands/toggle.js";
 
 const program = new Command();
 
@@ -76,6 +77,14 @@ program
   .description("Run typecheck, lint, and prettier on the current project")
   .action(async () => {
     await checkCommand();
+  });
+
+program
+  .command("toggle")
+  .description("Toggle between main branch and staging branch (-stg suffix)")
+  .option("--suffix <string>", "Staging branch suffix", "-stg")
+  .action(async (options: { suffix?: string }) => {
+    await toggleCommand(options);
   });
 
 async function main(): Promise<void> {
