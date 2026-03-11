@@ -1,4 +1,5 @@
 import chalk from "chalk";
+import { execa } from "execa";
 import { checkPrerequisites } from "../lib/prerequisites.js";
 import { loadContext } from "../lib/context.js";
 import { createPr, copyToClipboard } from "../lib/github.js";
@@ -6,21 +7,22 @@ import { getIssueFromBranch } from "../lib/linear.js";
 import { withSpinner } from "../lib/spinner.js";
 import { HermesError } from "../lib/errors.js";
 
-const PR_BODY_TEMPLATE = (
-  ticketId: string,
-  ticketTitle: string,
-  ticketUrl: string
-) => `## Ticket
-[${ticketId} - ${ticketTitle}](${ticketUrl})
+function formatPrTitle(ticketId: string, ticketTitle: string): string {
+  const escaped = ticketId.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const stripped = ticketTitle.replace(new RegExp(`^${escaped}:\\s*`, "i"), "").trim();
+  return `[${ticketId}]: ${stripped || ticketTitle}`;
+}
 
-## How to test
-<!-- Describe the steps to test -->
-
-## Checklist
-- [ ] Tests passing
-- [ ] No lint errors
-- [ ] Reviewed locally
-`;
+async function getCommitsList(base: string): Promise<string> {
+  try {
+    const { stdout } = await execa("git", ["log", `origin/${base}..HEAD`, "--oneline"]);
+    const lines = stdout.trim().split("\n").filter(Boolean);
+    if (lines.length === 0) return "";
+    return lines.map((l) => `- ${l}`).join("\n");
+  } catch {
+    return "";
+  }
+}
 
 type Target = "stg" | "main" | "both";
 
@@ -67,15 +69,15 @@ export async function prCreateCommand(options: {
   const target = options.target ?? "stg";
   const draft = options.draft ?? false;
 
-  const { ticketId, ticketTitle, ticketUrl } = await getTicketInfo();
-  const title = `[${ticketId}] ${ticketTitle}`;
-  const body = PR_BODY_TEMPLATE(ticketId, ticketTitle, ticketUrl);
-
+  const { ticketId, ticketTitle } = await getTicketInfo();
+  const title = formatPrTitle(ticketId, ticketTitle);
   const bases = resolveBaseBranch(target);
 
   const urls: string[] = [];
 
   for (const base of bases) {
+    const commits = await getCommitsList(base);
+    const body = commits ? `## Commits\n\n${commits}` : "";
     const label = draft ? "draft " : "";
     await withSpinner(
       `Creating ${label}PR to ${base}...`,
