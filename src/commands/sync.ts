@@ -81,7 +81,7 @@ export async function syncCommand(options: {
 
       // 4. Pull -stg (in case there are remote updates)
       await runStep(`Pull ${stgBranch}`, async () => {
-        await execa("git", ["pull", "origin", stgBranch]);
+        await execa("git", ["pull", "--ff-only", "origin", stgBranch]);
       });
     } else {
       await runStep(`Create ${stgBranch}`, async () => {
@@ -96,7 +96,7 @@ export async function syncCommand(options: {
 
     // 6. Pull staging into -stg
     await runStep(`Pull ${stagingBranch} into ${stgBranch}`, async () => {
-      await execa("git", ["pull", "origin", stagingBranch]);
+      await execa("git", ["pull", "--ff-only", "origin", stagingBranch]);
     });
 
     // 7. Push -stg (use -u to set upstream on first push)
