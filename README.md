@@ -41,7 +41,22 @@ hermes start <ticket-id>
 - Creates branch `feat/<id>` or `fix/<id>` (use `--type fix` for fix)
 - Saves context to `.hermes-context.json`
 
-### 2. Deploy ephemeral environment and update ticket
+### 2. Deploy ephemeral environment
+
+```bash
+hermes deployfe
+hermes deployfe -c                    # also build cw-core (branch: main)
+hermes deployfe -c feat/xyz           # build cw-core from feat/xyz
+hermes deployfe -t                    # also build cw-ms-timesheets (branch: main)
+hermes deployfe --no-socketio         # disable Socket.IO (enabled by default)
+```
+
+- Triggers the "Deploy Feature Environment" workflow
+- React branch: current branch (or `-r <branch>`)
+- Core/Timesheets: `main` by default when `-c`/`-t` are used
+- Socket.IO: enabled by default
+
+### 3. Deploy ephemeral environment and move ticket to DEV Testing
 
 ```bash
 hermes test
@@ -54,17 +69,7 @@ hermes test
 - Waits for deploy completion (polling with exponential backoff)
 - Extracts the ephemeral environment URL from logs
 
-### 3. Create pull request
-
-```bash
-hermes pr
-```
-
-- Creates PR with title `[TICKET-ID] Title` and pre-filled template
-- Copies URL to clipboard
-- Saves `prUrl` and `prNumber` to context
-
-### Create PR to staging or main
+### 4. Create pull request
 
 ```bash
 hermes prc
@@ -74,14 +79,14 @@ hermes prc -d
 hermes prc -t main -d
 ```
 
-Creates PR(s) using ticket info from context (`.hermes-context.json`) or from the current branch name
+Creates PR(s) with title `[TICKET-ID] Title` and pre-filled template. Uses ticket info from context (`.hermes-context.json`) or from the current branch name. Copies URL to clipboard and saves `prUrl` and `prNumber` to context.
 
 | Flag | Short | Description |
 |------|-------|-------------|
 | `--target <stg\|main\|both>` | `-t` | Target branch: stg (default), main, or both |
 | `--draft` | `-d` | Create as draft PR |
 
-### 4. Request review
+### 5. Request review
 
 ```bash
 hermes review
@@ -90,7 +95,7 @@ hermes review
 - Sends a message on Slack with PR link and preview
 - Moves ticket to "Ready for QA"
 
-### 5. Tear down ephemeral environment
+### 6. Tear down ephemeral environment
 
 ```bash
 hermes stop

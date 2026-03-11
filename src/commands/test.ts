@@ -1,19 +1,13 @@
 import chalk from "chalk";
-import { execa } from "execa";
-import { checkPrerequisites } from "../lib/prerequisites.js";
 import { loadContext, saveContext } from "../lib/context.js";
 import { DEFAULTS } from "../lib/defaults.js";
+import { getRunLogs, waitForRun } from "../lib/github.js";
 import {
-  fetchIssue,
-  updateIssueStatus,
-  updateIssueDescription,
+  updateIssueStatus
 } from "../lib/linear.js";
-import {
-  triggerWorkflow,
-  waitForRun,
-  getRunLogs,
-} from "../lib/github.js";
+import { checkPrerequisites } from "../lib/prerequisites.js";
 import { withSpinner } from "../lib/spinner.js";
+import { triggerDeployFeatureWorkflow } from "./deploy.js";
 
 function extractEphemeralUrlFromLogs(logs: string): string | null {
   const urlPatterns = [
@@ -31,43 +25,49 @@ function extractEphemeralUrlFromLogs(logs: string): string | null {
 export async function testCommand(): Promise<void> {
   await checkPrerequisites(["gh", "linear"]);
   const context = await loadContext();
-  const { ticketId } = context;
+  const { ticketId, branch } = context;
 
   const { runId, url: runUrl } = await withSpinner(
     "Triggering ephemeral environment...",
     () =>
-      triggerWorkflow(DEFAULTS.github.deployWorkflow, {
-        branch: context.branch,
+      triggerDeployFeatureWorkflow({
+        branchReact: branch,
+        buildCore: false,
+        branchCore: "main",
+        buildTimesheets: false,
+        branchTimesheets: "main",
+        enabledSocketio: true,
       })
   );
 
   console.log(chalk.gray(`\nRun: ${runUrl}\n`));
 
   let testInfo = "";
-  try {
-    testInfo = await withSpinner(
-      "Generating test info with Claude Code...",
-      async () => {
-        const [cmd, ...args] = DEFAULTS.claudeCode.command.split(/\s+/);
-        const result = await execa(cmd, args, { stdout: "pipe" });
-        return result.stdout ?? "";
-      }
-    );
-  } catch (err) {
-    console.log(chalk.yellow("Warning: Claude Code failed. Continuing without test info."));
-  }
+  // try {
+  //   testInfo = await withSpinner(
+  //     "Generating test info with Claude Code...",
+  //     async () => {
+  //       const [cmd, ...args] = DEFAULTS.claudeCode.command.split(/\s+/);
+  //       const result = await execa(cmd, args, { stdout: "pipe" });
+  //       return result.stdout ?? "";
+  //     }
+  //   );
+  // } catch (err) {
+  //   console.log(chalk.yellow("Warning: Claude Code failed. Continuing without test info."));
+  // }
 
-  if (testInfo) {
-    await withSpinner("Updating ticket on Linear...", async () => {
-      const issue = await fetchIssue(ticketId);
-      const separator = issue.description ? "\n\n" : "";
-      const updatedDescription = `${issue.description}${separator}## Test Information\n\n${testInfo}`;
-      await updateIssueDescription(ticketId, updatedDescription);
-    });
-    await withSpinner("Moving ticket to Dev Testing...", () =>
-      updateIssueStatus(ticketId, DEFAULTS.linear.statusDevTesting)
-    );
-  }
+  // if (testInfo) {
+  //   await withSpinner("Updating ticket on Linear...", async () => {
+  //     const issue = await fetchIssue(ticketId);
+  //     const separator = issue.description ? "\n\n" : "";
+  //     const updatedDescription = `${issue.description}${separator}## Test Information\n\n${testInfo}`;
+  //     await updateIssueDescription(ticketId, updatedDescription);
+  //   });
+  // }
+
+  await withSpinner("Moving ticket to DEV Testing...", () =>
+    updateIssueStatus(ticketId, DEFAULTS.linear.statusDevTesting)
+  );
 
   const runResult = await withSpinner("Waiting for deploy...", () =>
     waitForRun(runId)

@@ -6,6 +6,7 @@ export const DEFAULTS = {
   },
   github: {
     deployWorkflow: "deploy-ephemeral.yml",
+    deployFeatureWorkflowId: "172365310", // Deploy Feature Environment
     destroyWorkflow: "destroy-ephemeral.yml",
   },
   slack: {

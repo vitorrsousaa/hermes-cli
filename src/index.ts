@@ -4,7 +4,6 @@ import { HermesError } from "./lib/errors.js";
 import { startCommand } from "./commands/start.js";
 import { testCommand } from "./commands/test.js";
 import { stopCommand } from "./commands/stop.js";
-import { prCommand } from "./commands/pr.js";
 import { reviewCommand } from "./commands/review.js";
 import { branchCommand } from "./commands/branch.js";
 import { checkCommand } from "./commands/check.js";
@@ -13,6 +12,7 @@ import { syncCommand } from "./commands/sync.js";
 import { prCreateCommand } from "./commands/pr-create.js";
 import { updateCommand } from "./commands/update.js";
 import { pushCommand } from "./commands/push.js";
+import { deployCommand } from "./commands/deploy.js";
 
 const program = new Command();
 
@@ -30,8 +30,29 @@ program
   });
 
 program
+  .command("deployfe")
+  .description("Deploy feature environment (ephemeral)")
+  .option("-r, --react [branch]", "React branch (default: current branch)")
+  .option("-c, --core [branch]", "Build cw-core; optional branch (default: main)")
+  .option("-t, --timesheets [branch]", "Build cw-ms-timesheets; optional branch (default: main)")
+  .option("--no-socketio", "Disable Socket.IO (enabled by default)")
+  .action(async (options: {
+    react?: string;
+    core?: string | boolean;
+    timesheets?: string | boolean;
+    socketio?: boolean;
+  }) => {
+    await deployCommand({
+      react: typeof options.react === "string" ? options.react : undefined,
+      core: options.core === true ? true : options.core,
+      timesheets: options.timesheets === true ? true : options.timesheets,
+      socketio: options.socketio,
+    });
+  });
+
+program
   .command("test")
-  .description("Deploy ephemeral environment and update ticket")
+  .description("Move ticket to DEV Testing and deploy ephemeral environment")
   .action(async () => {
     await testCommand();
   });
@@ -41,14 +62,6 @@ program
   .description("Tear down ephemeral environment")
   .action(async () => {
     await stopCommand();
-  });
-
-program
-  .command("pr")
-  .description("Create pull request")
-  .option("-y, --yes", "Skip interaction (--no-edit)")
-  .action(async (options: { yes?: boolean }) => {
-    await prCommand(options);
   });
 
 program

@@ -21,18 +21,26 @@ export interface TriggerWorkflowResult {
   url: string;
 }
 
+export interface TriggerWorkflowOptions {
+  /** Git ref to run workflow from (e.g. "main"). If not set, uses inputs.branch when present. */
+  ref?: string;
+}
+
 export async function triggerWorkflow(
   workflow: string,
-  inputs?: Record<string, string>
+  inputs?: Record<string, string>,
+  options?: TriggerWorkflowOptions
 ): Promise<TriggerWorkflowResult> {
   const args = ["workflow", "run", workflow];
-  if (inputs?.branch) {
-    args.push("--ref", inputs.branch);
+  const ref = options?.ref ?? inputs?.branch;
+  if (ref) {
+    args.push("--ref", ref);
   }
   if (inputs && Object.keys(inputs).length > 0) {
-    const inputArgs = Object.entries(inputs)
-      .filter(([k]) => k !== "branch")
-      .flatMap(([k, v]) => ["-f", `${k}=${v}`]);
+    const inputArgs = Object.entries(inputs).flatMap(([k, v]) => [
+      "-f",
+      `${k}=${v}`,
+    ]);
     args.push(...inputArgs);
   }
 
@@ -50,8 +58,8 @@ export async function triggerWorkflow(
     "--json",
     "databaseId,url",
   ];
-  if (inputs?.branch) {
-    listArgs.push("--branch", inputs.branch);
+  if (ref) {
+    listArgs.push("--branch", ref);
   }
   const { stdout } = await execa("gh", listArgs);
   const runs = JSON.parse(stdout) as { databaseId: number; url: string }[];

@@ -15,7 +15,7 @@ export async function reviewCommand(): Promise<void> {
   if (!prUrl) {
     throw new HermesError(
       "No PR created.",
-      "Run hermes pr first."
+      "Run hermes prc first."
     );
   }
 
