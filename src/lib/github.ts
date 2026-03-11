@@ -114,6 +114,7 @@ export async function createPr(options: {
   title: string;
   body: string;
   base?: string;
+  draft?: boolean;
 }): Promise<{ url: string; number: number }> {
   const args = [
     "pr",
@@ -125,6 +126,9 @@ export async function createPr(options: {
   ];
   if (options.base) {
     args.push("--base", options.base);
+  }
+  if (options.draft) {
+    args.push("--draft");
   }
   const { stdout } = await execa("gh", args);
 

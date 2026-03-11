@@ -17,7 +17,13 @@ npm run build && npm link
 ## Prerequisites
 
 - **GitHub CLI** (`gh`): [https://cli.github.com/](https://cli.github.com/)
-- **Linear CLI** (`@schpet/linear-cli`): `npm install -g @schpet/linear-cli && linear auth`
+- **Linear CLI** (`@schpet/linear-cli`): required for `hermes start`, `hermes prc`, etc.
+
+  ```bash
+  npm install -g @schpet/linear-cli
+  linear auth
+  ```
+
 - **Slack CLI** (optional, for `hermes review`): [https://api.slack.com/automation/cli](https://api.slack.com/automation/cli)
 
 ## Setup
@@ -72,6 +78,23 @@ hermes pr
 - Creates PR with title `[TICKET-ID] Title` and pre-filled template
 - Copies URL to clipboard
 - Saves `prUrl` and `prNumber` to context
+
+### Create PR to staging or main
+
+```bash
+hermes prc
+hermes prc -t main
+hermes prc -t both
+hermes prc -d
+hermes prc -t main -d
+```
+
+Creates PR(s) using ticket info from context (`.hermes-context.json`) or from the current branch via Linear CLI:
+
+| Flag | Short | Description |
+|------|-------|-------------|
+| `--target <stg\|main\|both>` | `-t` | Target branch: stg (default), main, or both |
+| `--draft` | `-d` | Create as draft PR |
 
 ### 4. Request review
 

@@ -105,6 +105,29 @@ export async function updateIssueStatus(
   }
 }
 
+/**
+ * Get issue ID and title from current branch using linear-cli.
+ * Extracts from branch name (e.g. feat/ENG-123, fix/9082-stg).
+ */
+export async function getIssueFromBranch(): Promise<{ id: string; title: string; url: string } | null> {
+  try {
+    const { stdout: id } = await execa("npx", ["@schpet/linear-cli", "issue", "id"]);
+    const ticketId = id?.trim();
+    if (!ticketId) return null;
+
+    const { stdout: title } = await execa("npx", ["@schpet/linear-cli", "issue", "title"]);
+    const ticketTitle = title?.trim() || ticketId;
+
+    return {
+      id: ticketId,
+      title: ticketTitle,
+      url: `https://linear.app/issue/${ticketId}`,
+    };
+  } catch {
+    return null;
+  }
+}
+
 export async function updateIssueDescription(
   issueId: string,
   description: string,

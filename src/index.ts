@@ -11,6 +11,7 @@ import { branchCommand } from "./commands/branch.js";
 import { checkCommand } from "./commands/check.js";
 import { toggleCommand } from "./commands/toggle.js";
 import { syncCommand } from "./commands/sync.js";
+import { prCreateCommand } from "./commands/pr-create.js";
 
 const program = new Command();
 
@@ -54,6 +55,23 @@ program
   .option("-y, --yes", "Skip interaction (--no-edit)")
   .action(async (options: { yes?: boolean }) => {
     await prCommand(options);
+  });
+
+program
+  .command("prc")
+  .description("Create PR to stg, main, or both (uses Linear issue from context or branch)")
+  .option("-t, --target <stg|main|both>", "Target branch(es)", "stg")
+  .option("-d, --draft", "Create as draft PR")
+  .action(async (options: { target?: string; draft?: boolean }) => {
+    const target = options.target as "stg" | "main" | "both" | undefined;
+    if (target && !["stg", "main", "both"].includes(target)) {
+      console.error("Invalid target. Use: stg, main, or both");
+      process.exit(1);
+    }
+    await prCreateCommand({
+      target: target ?? "stg",
+      draft: options.draft ?? false,
+    });
   });
 
 program
