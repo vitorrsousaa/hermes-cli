@@ -1,6 +1,7 @@
 import chalk from "chalk";
 import { execa, type ExecaError } from "execa";
 import ora from "ora";
+import { extractIssueIdFromBranch } from "../lib/linear.js";
 
 interface StepResult {
   name: string;
@@ -36,7 +37,8 @@ async function runStep(
   } catch (err) {
     const execaErr = err as ExecaError;
     spinner.fail(chalk.red(label));
-    return { name, passed: false, error: execaErr.stderr || execaErr.stdout };
+    const errMsg = execaErr.stderr ?? execaErr.stdout;
+    return { name, passed: false, error: errMsg != null ? String(errMsg) : undefined };
   }
 }
 
@@ -91,7 +93,8 @@ export async function checkCommand(): Promise<void> {
 
   // Files were modified by lint/prettier — commit them
   const branch = await getBaseBranch();
-  const commitMsg = `fix(${branch}): fix linter errors`;
+  const ticketId = extractIssueIdFromBranch(branch) ?? branch;
+  const commitMsg = `fix(${ticketId}): fix linter errors`;
 
   console.log(
     chalk.yellow(`  ${modified.length} file(s) modified by lint/prettier:\n`)

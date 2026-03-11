@@ -20,7 +20,8 @@ export async function branchCommand(options: {
     branch = branch.slice(0, -4);
   }
 
-  if (options.copy) {
+  // Copy by default; --no-copy disables it
+  if (options.copy !== false) {
     await copyToClipboard(branch);
     console.log(chalk.green(branch));
     console.log(chalk.gray("  Copied to clipboard"));

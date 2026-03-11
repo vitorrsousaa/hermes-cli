@@ -76,10 +76,10 @@ program
 
 program
   .command("branch")
-  .description("Print current branch name")
+  .description("Print current branch name (copies to clipboard by default)")
   .option("-s, --stg", "Append -stg suffix to branch name")
-  .option("-c, --copy", "Copy branch name to clipboard")
-  .addHelpText("after", "\nShorthand:\n  hermes branch -sc    staging suffix + copy to clipboard")
+  .option("--no-copy", "Do not copy to clipboard")
+  .addHelpText("after", "\nShorthand:\n  hermes branch -s    staging suffix + copy to clipboard")
   .action(async (options: { stg?: boolean; copy?: boolean }) => {
     await branchCommand(options);
   });
