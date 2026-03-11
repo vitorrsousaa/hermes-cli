@@ -6,11 +6,9 @@ export async function getCurrentBranch(): Promise<string> {
 }
 
 export async function branchExists(branch: string): Promise<boolean> {
-  try {
-    await execa("git", ["rev-parse", "--verify", branch], { reject: false });
-    return true;
-  } catch {
-    return false;
-  }
+  const result = await execa("git", ["rev-parse", "--verify", branch], {
+    reject: false,
+  });
+  return !result.failed;
 }
 

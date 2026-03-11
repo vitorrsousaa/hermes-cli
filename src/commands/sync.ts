@@ -1,18 +1,9 @@
 import chalk from "chalk";
 import { execa, type ExecaError } from "execa";
 import ora from "ora";
-import { getCurrentBranch } from "../lib/git.js";
+import { getCurrentBranch, branchExists } from "../lib/git.js";
 
 const DEFAULT_STG_SUFFIX = "-stg";
-
-async function branchExists(branch: string): Promise<boolean> {
-  try {
-    await execa("git", ["rev-parse", "--verify", branch], { reject: false });
-    return true;
-  } catch {
-    return false;
-  }
-}
 
 async function runStep(label: string, fn: () => Promise<void>): Promise<void> {
   const spinner = ora(label).start();
