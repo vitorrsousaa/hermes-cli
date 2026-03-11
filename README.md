@@ -138,6 +138,20 @@ Example with custom suffix:
 hermes toggle --suffix -staging
 ```
 
+### Update branch with main or staging
+
+```bash
+hermes update
+hermes update -t main
+hermes update -t stg
+```
+
+Merges `origin/main` or `origin/staging` into the current branch.
+
+| Flag | Short | Description |
+|------|-------|-------------|
+| `--target <main\|stg>` | `-t` | Branch to merge from (default: stg) |
+
 ### Sync branch to staging
 
 ```bash

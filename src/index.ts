@@ -11,6 +11,7 @@ import { checkCommand } from "./commands/check.js";
 import { toggleCommand } from "./commands/toggle.js";
 import { syncCommand } from "./commands/sync.js";
 import { prCreateCommand } from "./commands/pr-create.js";
+import { updateCommand } from "./commands/update.js";
 
 const program = new Command();
 
@@ -96,6 +97,19 @@ program
   .option("--suffix <string>", "Staging branch suffix", "-stg")
   .action(async (options: { suffix?: string }) => {
     await toggleCommand(options);
+  });
+
+program
+  .command("update")
+  .description("Update current branch with main or staging")
+  .option("-t, --target <main|stg>", "Branch to merge from", "stg")
+  .action(async (options: { target?: string }) => {
+    const target = options.target as "main" | "stg" | undefined;
+    if (target && !["main", "stg"].includes(target)) {
+      console.error("Invalid target. Use: main or stg");
+      process.exit(1);
+    }
+    await updateCommand({ target: target ?? "stg" });
   });
 
 program
