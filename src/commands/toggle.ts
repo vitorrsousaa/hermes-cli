@@ -1,25 +1,18 @@
 import chalk from "chalk";
 import { execa, type ExecaError } from "execa";
+import { getCurrentBranch } from "../lib/git.js";
 
 const DEFAULT_STG_SUFFIX = "-stg";
-
-async function getCurrentBranch(): Promise<string | null> {
-  try {
-    const { stdout } = await execa("git", ["rev-parse", "--abbrev-ref", "HEAD"]);
-    return stdout.trim() || null;
-  } catch {
-    return null;
-  }
-}
 
 export async function toggleCommand(options: {
   suffix?: string;
 }): Promise<void> {
   const suffix = options.suffix ?? DEFAULT_STG_SUFFIX;
 
-  const current = await getCurrentBranch();
-
-  if (!current) {
+  let current: string;
+  try {
+    current = await getCurrentBranch();
+  } catch {
     console.error(chalk.red("Not a valid Git repository."));
     process.exit(1);
   }

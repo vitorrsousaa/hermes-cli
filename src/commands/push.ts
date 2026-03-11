@@ -1,11 +1,7 @@
 import chalk from "chalk";
 import { execa, type ExecaError } from "execa";
 import ora from "ora";
-
-async function getCurrentBranch(): Promise<string> {
-  const { stdout } = await execa("git", ["rev-parse", "--abbrev-ref", "HEAD"]);
-  return stdout.trim();
-}
+import { getCurrentBranch } from "../lib/git.js";
 
 export async function pushCommand(): Promise<void> {
   const branch = await getCurrentBranch();

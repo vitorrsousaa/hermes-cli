@@ -1,11 +1,6 @@
 import chalk from "chalk";
-import { execa } from "execa";
 import { copyToClipboard } from "../lib/github.js";
-
-async function getCurrentBranch(): Promise<string> {
-  const { stdout } = await execa("git", ["rev-parse", "--abbrev-ref", "HEAD"]);
-  return stdout.trim();
-}
+import { getCurrentBranch } from "../lib/git.js";
 
 export async function branchCommand(options: {
   stg?: boolean;

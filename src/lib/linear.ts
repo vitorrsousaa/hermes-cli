@@ -1,6 +1,7 @@
 import { homedir } from "os";
 import { execa } from "execa";
 import { HermesError } from "./errors.js";
+import { getCurrentBranch } from "./git.js";
 
 export interface LinearEnv {
   apiKey: string;
@@ -124,8 +125,7 @@ export async function getIssueFromBranch(): Promise<{
   title: string;
   url: string;
 } | null> {
-  const { stdout } = await execa("git", ["rev-parse", "--abbrev-ref", "HEAD"]);
-  const branch = stdout?.trim() ?? "";
+  const branch = await getCurrentBranch();
   const ticketId = extractIssueIdFromBranch(branch);
   if (!ticketId) return null;
 

@@ -1,6 +1,7 @@
 import chalk from "chalk";
 import { execa, type ExecaError } from "execa";
 import ora from "ora";
+import { getCurrentBranch } from "../lib/git.js";
 
 type Target = "main" | "stg";
 
@@ -45,8 +46,7 @@ export async function updateCommand(options: {
       execa("git", ["merge", "--no-commit", "--no-ff", remoteBranch])
     );
 
-    const { stdout } = await execa("git", ["rev-parse", "--abbrev-ref", "HEAD"]);
-    const currentBranch = stdout.trim();
+    const currentBranch = await getCurrentBranch();
     await runStep(`Commit merge`, () =>
       execa("git", [
         "commit",

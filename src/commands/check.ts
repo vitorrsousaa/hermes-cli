@@ -1,6 +1,7 @@
 import chalk from "chalk";
 import { execa, type ExecaError } from "execa";
 import ora from "ora";
+import { getCurrentBranch } from "../lib/git.js";
 import { extractIssueIdFromBranch } from "../lib/linear.js";
 
 interface StepResult {
@@ -10,8 +11,7 @@ interface StepResult {
 }
 
 async function getBaseBranch(): Promise<string> {
-  const { stdout } = await execa("git", ["rev-parse", "--abbrev-ref", "HEAD"]);
-  const branch = stdout.trim();
+  const branch = await getCurrentBranch();
   return branch.endsWith("-stg") ? branch.slice(0, -4) : branch;
 }
 
