@@ -1,0 +1,106 @@
+# Commands
+
+> See also: [../lib/claude.md](../lib/claude.md), [../../docs/workflow.md](../../docs/workflow.md)
+
+## Quick reference
+
+| Command | File | Prereq | Context | Description |
+|---------|------|--------|---------|-------------|
+| `start` | start.ts | gh, linear | Creates | Creates branch and context |
+| `deployfe` | deploy.ts | gh | No | Triggers deploy workflow |
+| `test` | test.ts | gh, linear | Yes | Deploy + status DEV Testing |
+| `stop` | stop.ts | gh | Yes | Destroys ephemeral environment |
+| `prc` | pr-create.ts | gh, linear | Fallback | Creates PR(s) |
+| `review` | review.ts | linear, slack | Yes | Slack + status Ready for QA |
+| `ready` | ready.ts | linear | Yes | Status DEV Testing → Ready for QA |
+| `branch` | branch.ts | — | No | Branch name ± clipboard |
+| `toggle` | toggle.ts | — | No | Switch main ↔ -stg |
+| `sync` | sync.ts | — | No | Sync main → -stg |
+| `update` | update.ts | — | No | Merge main/staging into branch |
+| `push` | push.ts | — | No | Push current branch |
+| `check` | check.ts | — | No | Typecheck, lint, prettier |
+
+## Per-command details
+
+### start
+
+- `hermes start <ticket-id> [-t feat|fix]`
+- Creates branch `feat/<id>` or `fix/<id>` from `main`
+- Saves context; adds `.hermes-context.json` to `.gitignore`
+
+### deployfe
+
+- `hermes deployfe [-r branch] [-c [branch]] [-t [branch]] [--no-socketio]`
+- `-r`: React branch (default: current)
+- `-c`: build cw-core (default: main)
+- `-t`: build cw-ms-timesheets (default: main)
+- `--no-socketio`: disable Socket.IO
+
+### test
+
+- `hermes test`
+- Triggers deploy with branch from context
+- Moves ticket to "DEV Testing"
+- Copies workflow URL to clipboard
+
+### stop
+
+- `hermes stop`
+- Requires `ephemeralEnvUrl` in context (otherwise exits without action)
+- Triggers destroy workflow with branch from context
+- Removes `ephemeralEnvUrl` from context after success
+
+### prc
+
+- `hermes prc [-t stg|main|both] [-d]`
+- `-t stg`: PR to `staging` (uses `-stg` branch if it exists)
+- `-t main`: PR to `main`
+- `-t both`: two PRs
+- `-d`: draft PR
+- Title: `[TICKET-ID] Title`
+
+### review
+
+- `hermes review`
+- Requires `prUrl` in context (run `hermes prc` first)
+- Sends message on Slack #pr
+- Moves ticket to "Ready for QA"
+
+### ready
+
+- `hermes ready`
+- Moves ticket from "DEV Testing" to "Ready for QA"
+- No Slack message; use when handing off to QA without review request
+
+### branch
+
+- `hermes branch [-s] [--no-copy]`
+- `-s`: add `-stg` suffix
+- `--no-copy`: do not copy to clipboard
+
+### toggle
+
+- `hermes toggle [--suffix <string>]`
+- Switches between main branch and `-stg`
+- Default suffix: `-stg`
+
+### sync
+
+- `hermes sync [--suffix <string>] [--staging <branch>]`
+- Push main → create/checkout -stg → merge main → merge staging → push -stg
+
+### update
+
+- `hermes update [-t main|stg]`
+- Merges `origin/main` or `origin/staging` into current branch
+
+### push
+
+- `hermes push`
+- Pushes current branch to origin
+
+### check
+
+- `hermes check`
+- Runs: typecheck, lint:fix, prettier:fix
+- If lint/prettier modify files, auto-commits them

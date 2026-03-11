@@ -94,6 +94,15 @@ hermes review
 - Sends a message on Slack with PR link and preview
 - Moves ticket to "Ready for QA"
 
+### 5b. Move ticket to Ready for QA (without Slack)
+
+```bash
+hermes ready
+```
+
+- Moves ticket from "DEV Testing" to "Ready for QA"
+- Use when you've finished testing and want to hand off to QA without sending a Slack message
+
 ### 6. Tear down ephemeral environment
 
 ```bash

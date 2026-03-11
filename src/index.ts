@@ -13,6 +13,7 @@ import { prCreateCommand } from "./commands/pr-create.js";
 import { updateCommand } from "./commands/update.js";
 import { pushCommand } from "./commands/push.js";
 import { deployCommand } from "./commands/deploy.js";
+import { readyCommand } from "./commands/ready.js";
 
 const program = new Command();
 
@@ -86,6 +87,13 @@ program
   .description("Request review (Slack + Linear)")
   .action(async () => {
     await reviewCommand();
+  });
+
+program
+  .command("ready")
+  .description("Move ticket from DEV Testing to Ready for QA")
+  .action(async () => {
+    await readyCommand();
   });
 
 program
