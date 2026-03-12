@@ -33,6 +33,6 @@ File at the **Git repository root** where Hermes is run (e.g. `cw-react`). Path 
 ## Commands that use context
 
 - **`test`** — branch for deploy
-- **`stop`** — branch for destroy workflow
+- **`cleanup`** — optional: branch for cleanup workflow (or current branch)
 - **`review`** — ticketId, ticketTitle, prUrl, ephemeralEnvUrl
 - **`prc`** — fallback for ticketId/ticketTitle when context exists; otherwise uses branch to fetch from Linear

@@ -110,11 +110,11 @@ hermes ready
 ### 6. Tear down ephemeral environment
 
 ```bash
-hermes stop
+hermes cleanup              # Trigger Cleanup Stale FE Namespaces (current branch)
+hermes cleanup -b feat/xyz  # Clean up namespace for specific branch
 ```
 
-- Triggers the destroy workflow
-- Removes `ephemeralEnvUrl` from context
+- Triggers Cleanup Stale FE Namespaces workflow (delete-dynamic-env); removes ephemeral namespace.
 
 ## Utilities
 

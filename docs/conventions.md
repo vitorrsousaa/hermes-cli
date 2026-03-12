@@ -17,7 +17,7 @@
 | Linear | statusDevTesting | "DEV Testing" |
 | Linear | statusInReview | "Ready for QA" |
 | GitHub | deployFeatureWorkflowId | "172365310" |
-| GitHub | destroyWorkflow | "destroy-ephemeral.yml" |
+| GitHub | cleanupWorkflow | "delete-dynamic-env.yaml" (Cleanup Stale FE Namespaces) |
 | Slack | channel | "#pr" |
 | claudeCode | command | "claude run test-info" |
 

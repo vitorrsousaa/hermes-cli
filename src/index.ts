@@ -3,7 +3,7 @@ import chalk from "chalk";
 import { HermesError } from "./lib/errors.js";
 import { startCommand } from "./commands/start.js";
 import { testCommand } from "./commands/test.js";
-import { stopCommand } from "./commands/stop.js";
+import { cleanupCommand } from "./commands/cleanup.js";
 import { reviewCommand } from "./commands/review.js";
 import { branchCommand } from "./commands/branch.js";
 import { checkCommand } from "./commands/check.js";
@@ -63,10 +63,11 @@ program
   });
 
 program
-  .command("stop")
-  .description("Tear down ephemeral environment")
-  .action(async () => {
-    await stopCommand();
+  .command("cleanup")
+  .description("Trigger Cleanup Stale FE Namespaces workflow (delete ephemeral namespace)")
+  .option("-b, --branch <name>", "Branch name to clean up (default: from context or current branch)")
+  .action(async (options: { branch?: string }) => {
+    await cleanupCommand({ branch: options.branch });
   });
 
 program

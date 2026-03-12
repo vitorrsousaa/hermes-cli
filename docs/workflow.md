@@ -14,7 +14,7 @@
 
 5. **`hermes review`** — Sends message on Slack (#pr) and moves ticket to "Ready for QA".
 
-6. **`hermes stop`** — Triggers ephemeral environment destroy workflow.
+6. **`hermes cleanup`** — Triggers Cleanup Stale FE Namespaces workflow (delete ephemeral namespace). Use when you need to tear down the ephemeral environment, e.g. `hermes cleanup` or `hermes cleanup -b feat/ENG-123`.
 
 ## Utility commands (outside main flow)
 

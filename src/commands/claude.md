@@ -9,7 +9,7 @@
 | `start` | start.ts | gh, linear | Creates | Creates branch and context |
 | `deployfe` | deploy.ts | gh | No | Triggers deploy workflow |
 | `test` | test.ts | gh, linear | Yes | Deploy + status DEV Testing |
-| `stop` | stop.ts | gh | Yes | Destroys ephemeral environment |
+| `cleanup` | cleanup.ts | gh | Optional | Triggers Cleanup Stale FE Namespaces workflow |
 | `prc` | pr-create.ts | gh, linear | Fallback | Creates PR(s) |
 | `review` | review.ts | linear, slack | Yes | Slack + status Ready for QA |
 | `ready` | ready.ts | linear | Yes | Status DEV Testing → Ready for QA |
@@ -46,12 +46,12 @@
 - Optionally generates AI task summary (if `claude-api-key` set); `-f` regenerates even if cached
 - See [../../docs/test.md](../../docs/test.md)
 
-### stop
+### cleanup
 
-- `hermes stop`
-- Requires `ephemeralEnvUrl` in context (otherwise exits without action)
-- Triggers destroy workflow with branch from context
-- Removes `ephemeralEnvUrl` from context after success
+- `hermes cleanup [-b branch]`
+- Triggers Cleanup Stale FE Namespaces workflow (delete-dynamic-env.yaml)
+- Uses branch from context, or current branch, or `-b` to specify
+- Use when you need to manually clean up an ephemeral namespace (e.g. from GitHub Actions)
 
 ### prc
 
