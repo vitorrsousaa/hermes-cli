@@ -6,15 +6,15 @@
 
 1. **`hermes start <ticket-id>`** — Fetches ticket from Linear, moves to "In Progress", creates branch `feat/<id>` or `fix/<id>`, saves context to `.hermes-context.json`.
 
-2. **`hermes deployfe`** — Triggers "Deploy Feature Environment" workflow on GitHub Actions (ephemeral environment).
+2. **`hermes deployfe`** — Triggers "Deploy Feature Environment" workflow. Uses current branch; optional `-c`/`-t` for core/timesheets (default: main).
 
-3. **`hermes test`** — Triggers deploy + moves ticket to "DEV Testing", copies workflow URL to clipboard. Optionally generates AI task summary (see [test.md](test.md)).
+3. **`hermes test`** — Uses current branch; triggers deploy, moves ticket to "DEV Testing", copies workflow URL. Optional `-c`/`-t` for core/timesheets (default: main). Optionally generates AI task summary (see [test.md](test.md)).
 
 4. **`hermes prc`** — Creates PR(s) to stg/main/both with title `[TICKET-ID] Title`, uses context or branch.
 
 5. **`hermes review`** — Sends message on Slack (#pr) and moves ticket to "Ready for QA".
 
-6. **`hermes cleanup`** — Triggers Cleanup Stale FE Namespaces workflow (delete ephemeral namespace). Use when you need to tear down the ephemeral environment, e.g. `hermes cleanup` or `hermes cleanup -b feat/ENG-123`.
+6. **`hermes cleanup`** — Triggers Cleanup Stale FE Namespaces (delete ephemeral namespace). Uses current branch by default; `-b` to specify branch.
 
 ## Utility commands (outside main flow)
 

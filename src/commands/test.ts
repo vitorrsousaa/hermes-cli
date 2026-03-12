@@ -1,9 +1,9 @@
 import chalk from "chalk";
 import { readFile, writeFile } from "fs/promises";
-import { loadContext } from "../lib/context.js";
 import { DEFAULTS } from "../lib/defaults.js";
 import { copyToClipboard } from "../lib/github.js";
-import { updateIssueStatus, updateIssueTitle } from "../lib/linear.js";
+import { getCurrentBranch } from "../lib/git.js";
+import { updateIssueStatus, updateIssueTitle, extractIssueIdFromBranch, fetchIssue } from "../lib/linear.js";
 import { checkPrerequisites } from "../lib/prerequisites.js";
 import { withSpinner } from "../lib/spinner.js";
 import { getClaudeApiKey } from "../lib/config.js";
@@ -44,29 +44,59 @@ function renderSummary(data: TaskSummaryData): void {
   console.log(data.taskSummary);
 }
 
-export async function testCommand(options: { force?: boolean; skipSummary?: boolean } = {}): Promise<void> {
-  await checkPrerequisites(["gh", "linear"]);
-  const context = await loadContext();
-  const { ticketId, branch } = context;
+function resolveCore(options: TestOptions): { build: boolean; branch: string } {
+  const c = options.core;
+  if (!c) return { build: false, branch: "main" };
+  if (c === true) return { build: true, branch: "main" };
+  return { build: true, branch: c };
+}
 
-  debug("context:", { ticketId, branch, ticketTitle: context.ticketTitle });
+function resolveTimesheets(options: TestOptions): { build: boolean; branch: string } {
+  const t = options.timesheets;
+  if (!t) return { build: false, branch: "main" };
+  if (t === true) return { build: true, branch: "main" };
+  return { build: true, branch: t };
+}
+
+export interface TestOptions {
+  force?: boolean;
+  skipSummary?: boolean;
+  /** Build cw-core; optional branch (default: main) */
+  core?: boolean | string;
+  /** Build cw-ms-timesheets; optional branch (default: main) */
+  timesheets?: boolean | string;
+}
+
+export async function testCommand(options: TestOptions = {}): Promise<void> {
+  await checkPrerequisites(["gh", "linear"]);
+
+  const branch = await getCurrentBranch();
+  const ticketId = extractIssueIdFromBranch(branch);
+  const { build: buildCore, branch: branchCore } = resolveCore(options);
+  const { build: buildTimesheets, branch: branchTimesheets } = resolveTimesheets(options);
+
+  debug("branch:", branch, "ticketId:", ticketId, "core:", branchCore, "timesheets:", branchTimesheets);
 
   const { url: runUrl } = await withSpinner(
     "Triggering ephemeral environment...",
     () =>
       triggerDeployFeatureWorkflow({
         branchReact: branch,
-        buildCore: false,
-        branchCore: "main",
-        buildTimesheets: false,
-        branchTimesheets: "main",
+        buildCore,
+        branchCore,
+        buildTimesheets,
+        branchTimesheets,
         enabledSocketio: true,
       })
   );
 
-  await withSpinner("Moving ticket to DEV Testing...", () =>
-    updateIssueStatus(ticketId, DEFAULTS.linear.statusDevTesting)
-  );
+  if (ticketId) {
+    await withSpinner("Moving ticket to DEV Testing...", () =>
+      updateIssueStatus(ticketId, DEFAULTS.linear.statusDevTesting)
+    );
+  } else {
+    console.log(chalk.gray("\n  Skipping Linear status update (branch name is not feat/XXX or fix/XXX)."));
+  }
 
   await copyToClipboard(runUrl);
   console.log(chalk.green("\n✓ Workflow triggered"));
@@ -83,6 +113,8 @@ export async function testCommand(options: { force?: boolean; skipSummary?: bool
 
       if (!apiKey) {
         console.log(chalk.gray("\n  Skipping summary generation and Linear ticket update (no Claude API key)"));
+      } else if (!ticketId) {
+        console.log(chalk.gray("\n  Skipping summary generation (branch name is not feat/XXX or fix/XXX)."));
       } else {
       const cachePath = buildSummaryCachePath(branch);
       debug("cache path:", cachePath);
@@ -110,8 +142,15 @@ export async function testCommand(options: { force?: boolean; skipSummary?: bool
         debug("aggregateText length:", aggregateText.length);
 
         debug("calling generateTaskSummary...");
+        let ticketTitle = `${ticketId}: Task`;
+        try {
+          const issue = await fetchIssue(ticketId);
+          ticketTitle = issue.title;
+        } catch {
+          // use placeholder
+        }
         const result = await withSpinner("Generating task summary...", () =>
-          generateTaskSummary(aggregateText, apiKey, { ticketId, ticketTitle: context.ticketTitle })
+          generateTaskSummary(aggregateText, apiKey, { ticketId, ticketTitle })
         );
         debug("generateTaskSummary result:", {
           inputTokens: result.inputTokens,

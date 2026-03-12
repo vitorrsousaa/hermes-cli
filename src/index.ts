@@ -16,6 +16,7 @@ import { deployCommand } from "./commands/deploy.js";
 import { readyCommand } from "./commands/ready.js";
 import { configSetCommand, configGetCommand } from "./commands/config.js";
 import { summaryCommand } from "./commands/summary.js";
+import { clearCacheCommand } from "./commands/clear-cache.js";
 
 const program = new Command();
 
@@ -55,19 +56,40 @@ program
 
 program
   .command("test")
-  .description("Move ticket to DEV Testing and deploy ephemeral environment")
+  .description("Move ticket to DEV Testing and deploy ephemeral environment (uses current branch)")
   .option("-f, --force", "Regenerate task summary even if cached")
   .option("--skip-summary", "Skip AI summary generation and Linear ticket update")
-  .action(async (options: { force?: boolean; skipSummary?: boolean }) => {
-    await testCommand(options);
+  .option("-c, --core [branch]", "Build cw-core; optional branch (default: main)")
+  .option("-t, --timesheets [branch]", "Build cw-ms-timesheets; optional branch (default: main)")
+  .action(async (options: {
+    force?: boolean;
+    skipSummary?: boolean;
+    core?: string | boolean;
+    timesheets?: string | boolean;
+  }) => {
+    await testCommand({
+      force: options.force,
+      skipSummary: options.skipSummary,
+      core: options.core === true ? true : options.core,
+      timesheets: options.timesheets === true ? true : options.timesheets,
+    });
   });
 
 program
   .command("cleanup")
   .description("Trigger Cleanup Stale FE Namespaces workflow (delete ephemeral namespace)")
-  .option("-b, --branch <name>", "Branch name to clean up (default: from context or current branch)")
+  .option("-b, --branch <name>", "Branch to clean up (default: current branch)")
   .action(async (options: { branch?: string }) => {
     await cleanupCommand({ branch: options.branch });
+  });
+
+program
+  .command("clear-cache")
+  .description("Remove hermes summary cache for current branch or all")
+  .option("-b, --branch <name>", "Branch to clear cache for (default: current branch)")
+  .option("--all", "Clear all hermes summary caches")
+  .action(async (options: { branch?: string; all?: boolean }) => {
+    await clearCacheCommand({ branch: options.branch, all: options.all });
   });
 
 program

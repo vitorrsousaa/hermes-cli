@@ -62,13 +62,15 @@ hermes deployfe --no-socketio         # disable Socket.IO (enabled by default)
 
 ```bash
 hermes test
-hermes test --skip-summary   # Skip AI summary and Linear ticket update
+hermes test --skip-summary            # Skip AI summary and Linear ticket update
+hermes test -c                       # Also build cw-core (branch: main)
+hermes test -c feat/xyz -t feat/abc  # Build core from feat/xyz, timesheets from feat/abc
 ```
 
-- Triggers the deploy workflow on GitHub Actions
-- Moves ticket to "DEV Testing"
-- Copies the workflow run URL to clipboard
-- **Optional summary**: If `claude-api-key` is configured, generates an AI task summary and updates the Linear ticket title. If no API key is set, skips these steps and prints a notice. Use `--skip-summary` to skip them explicitly.
+- Uses **current branch** for React and for the Linear ticket (derived from branch name `feat/XXX` or `fix/XXX`).
+- Core/Timesheets: `main` by default; use `-c` / `-t` with optional branch to build them.
+- Triggers the deploy workflow, moves ticket to "DEV Testing", copies workflow URL.
+- **Optional summary**: If `claude-api-key` is set, generates AI task summary and updates Linear title. Use `--skip-summary` to skip.
 
 ### 4. Create pull request
 
@@ -110,11 +112,19 @@ hermes ready
 ### 6. Tear down ephemeral environment
 
 ```bash
-hermes cleanup              # Trigger Cleanup Stale FE Namespaces (current branch)
+hermes cleanup              # Clean up namespace for current branch
 hermes cleanup -b feat/xyz  # Clean up namespace for specific branch
 ```
 
-- Triggers Cleanup Stale FE Namespaces workflow (delete-dynamic-env); removes ephemeral namespace.
+- Uses **current branch** by default; `-b` to specify another. Triggers Cleanup Stale FE Namespaces workflow.
+
+### 7. Clear summary cache
+
+```bash
+hermes clear-cache          # Clear cache for current branch
+hermes clear-cache -b feat/xyz
+hermes clear-cache --all    # Clear all hermes summary caches
+```
 
 ## Utilities
 

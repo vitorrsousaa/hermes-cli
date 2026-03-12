@@ -8,8 +8,9 @@
 |---------|------|--------|---------|-------------|
 | `start` | start.ts | gh, linear | Creates | Creates branch and context |
 | `deployfe` | deploy.ts | gh | No | Triggers deploy workflow |
-| `test` | test.ts | gh, linear | Yes | Deploy + status DEV Testing |
-| `cleanup` | cleanup.ts | gh | Optional | Triggers Cleanup Stale FE Namespaces workflow |
+| `test` | test.ts | gh, linear | No | Deploy + status DEV Testing (uses current branch) |
+| `cleanup` | cleanup.ts | gh | No | Cleanup Stale FE Namespaces (current branch or -b) |
+| `clear-cache` | clear-cache.ts | — | No | Remove summary cache (branch or --all) |
 | `prc` | pr-create.ts | gh, linear | Fallback | Creates PR(s) |
 | `review` | review.ts | linear, slack | Yes | Slack + status Ready for QA |
 | `ready` | ready.ts | linear | Yes | Status DEV Testing → Ready for QA |
@@ -39,19 +40,22 @@
 
 ### test
 
-- `hermes test [-f|--force]`
-- Triggers deploy with branch from context
-- Moves ticket to "DEV Testing"
-- Copies workflow URL to clipboard
-- Optionally generates AI task summary (if `claude-api-key` set); `-f` regenerates even if cached
+- `hermes test [-f|--force] [--skip-summary] [-c [branch]] [-t [branch]]`
+- Uses **current branch** for deploy and for Linear ticket (extracted from branch name).
+- Core/timesheets: default `main`; `-c` / `-t` with optional branch to build.
+- Moves ticket to "DEV Testing" (skips if branch is not feat/XXX or fix/XXX).
+- Optionally generates AI task summary; `-f` regenerates even if cached.
 - See [../../docs/test.md](../../docs/test.md)
 
 ### cleanup
 
 - `hermes cleanup [-b branch]`
-- Triggers Cleanup Stale FE Namespaces workflow (delete-dynamic-env.yaml)
-- Uses branch from context, or current branch, or `-b` to specify
-- Use when you need to manually clean up an ephemeral namespace (e.g. from GitHub Actions)
+- Uses **current branch** by default; `-b` to specify. Triggers Cleanup Stale FE Namespaces workflow.
+
+### clear-cache
+
+- `hermes clear-cache [-b branch] [--all]`
+- Removes summary cache for current branch (or `-b`), or `--all` for every branch.
 
 ### prc
 
