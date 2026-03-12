@@ -3,7 +3,7 @@ import { execa } from "execa";
 import { checkPrerequisites } from "../lib/prerequisites.js";
 import { loadContext } from "../lib/context.js";
 import { createPr, copyToClipboard } from "../lib/github.js";
-import { getCurrentBranch, branchExists } from "../lib/git.js";
+import { getCurrentBranch, branchExists, hasUncommittedChanges } from "../lib/git.js";
 import { getIssueFromBranch } from "../lib/linear.js";
 import { withSpinner } from "../lib/spinner.js";
 import { HermesError } from "../lib/errors.js";
@@ -78,6 +78,11 @@ async function ensureStgBranchAndCheckout(mainBranch: string): Promise<void> {
     await withSpinner(`Checkout ${stgBranch}`, () =>
       execa("git", ["checkout", stgBranch])
     );
+    if (!existsRemote) {
+      await withSpinner(`Push ${stgBranch}`, () =>
+        execa("git", ["push", "-u", "origin", stgBranch])
+      );
+    }
     return;
   }
 
@@ -113,9 +118,17 @@ export async function prCreateCommand(options: {
     ? currentBranch.slice(0, -DEFAULT_STG_SUFFIX.length)
     : currentBranch;
 
+  const stashed = await hasUncommittedChanges();
+  if (stashed) {
+    await withSpinner("Stashing uncommitted changes...", () =>
+      execa("git", ["stash", "push", "-u", "-m", "hermes-prc-temp"])
+    );
+  }
+
   const urls: string[] = [];
 
-  for (const { base, useStgBranch } of bases) {
+  try {
+    for (const { base, useStgBranch } of bases) {
     if (useStgBranch) {
       await ensureStgBranchAndCheckout(mainBranch);
     } else {
@@ -145,17 +158,25 @@ export async function prCreateCommand(options: {
     );
   }
 
-  await withSpinner(`Checkout ${currentBranch}`, () =>
-    execa("git", ["checkout", currentBranch])
-  );
+    await withSpinner(`Checkout ${currentBranch}`, () =>
+      execa("git", ["checkout", currentBranch])
+    );
 
-  if (urls.length > 0) {
-    await copyToClipboard(urls[0]);
-  }
+    if (urls.length > 0) {
+      await copyToClipboard(urls[0]);
+    }
 
-  console.log(chalk.green("\n✓ Pull request(s) created"));
-  for (const url of urls) {
-    console.log(chalk.cyan(`  ${url}`));
+    console.log(chalk.green("\n✓ Pull request(s) created"));
+    for (const url of urls) {
+      console.log(chalk.cyan(`  ${url}`));
+    }
+    console.log(chalk.gray("  First URL copied to clipboard"));
+  } finally {
+    if (stashed) {
+      await execa("git", ["checkout", currentBranch], { reject: false });
+      await withSpinner("Restoring uncommitted changes...", () =>
+        execa("git", ["stash", "pop"])
+      );
+    }
   }
-  console.log(chalk.gray("  First URL copied to clipboard"));
 }

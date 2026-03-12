@@ -1,7 +1,7 @@
 import chalk from "chalk";
 import { execa, type ExecaError } from "execa";
 import ora from "ora";
-import { getCurrentBranch, branchExists } from "../lib/git.js";
+import { getCurrentBranch, branchExists, branchExistsOnRemote } from "../lib/git.js";
 
 const DEFAULT_STG_SUFFIX = "-stg";
 
@@ -49,11 +49,12 @@ export async function syncCommand(options: {
 
     // 3. Checkout or create -stg branch (skip if already on it)
     const remoteStg = `origin/${stgBranch}`;
-    const stgExistsRemote = await branchExists(remoteStg);
+    const stgExistsRemoteRef = await branchExists(remoteStg);
+    const stgExistsOnRemote = await branchExistsOnRemote("origin", stgBranch);
     const stgExistsLocal = await branchExists(stgBranch);
 
     if (!isOnStg) {
-      if (stgExistsRemote || stgExistsLocal) {
+      if (stgExistsRemoteRef || stgExistsLocal) {
         await runStep(`Checkout ${stgBranch}`, async () => {
           if (stgExistsLocal) {
             await execa("git", ["checkout", stgBranch]);
@@ -62,20 +63,24 @@ export async function syncCommand(options: {
           }
         });
 
-        // 4. Pull -stg (in case there are remote updates)
-        await runStep(`Pull ${stgBranch}`, async () => {
-          await execa("git", ["pull", "--no-rebase", "origin", stgBranch]);
-        });
+        // 4. Pull -stg only if it exists on remote server (avoid "couldn't find remote ref")
+        if (stgExistsOnRemote) {
+          await runStep(`Pull ${stgBranch}`, async () => {
+            await execa("git", ["pull", "--no-rebase", "origin", stgBranch]);
+          });
+        }
       } else {
         await runStep(`Create ${stgBranch}`, async () => {
           await execa("git", ["checkout", "-b", stgBranch]);
         });
       }
     } else {
-      // Already on -stg: pull updates from remote
-      await runStep(`Pull ${stgBranch}`, async () => {
-        await execa("git", ["pull", "--no-rebase", "origin", stgBranch]);
-      });
+      // Already on -stg: pull updates from remote only if branch exists on remote server
+      if (stgExistsOnRemote) {
+        await runStep(`Pull ${stgBranch}`, async () => {
+          await execa("git", ["pull", "--no-rebase", "origin", stgBranch]);
+        });
+      }
     }
 
     // 5. Merge main branch into -stg (brings fix commits)
