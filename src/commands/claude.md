@@ -82,8 +82,9 @@
 
 ### ready
 
-- `hermes ready`
+- `hermes ready [-b branch]`
 - Moves ticket from "DEV Testing" to "Ready for QA"
+- Without `-b`: uses ticket from context. With `-b`: derives ticket from branch (e.g. `feat/ENG-4321`, `ENG-4321-stg`, `ENG-4321`).
 - No Slack message; use when handing off to QA without review request
 
 ### branch

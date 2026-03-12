@@ -120,6 +120,21 @@ export function extractIssueIdFromBranch(branch: string): string | null {
   return match?.[1]?.trim() ?? null;
 }
 
+/** Linear-style issue ID (e.g. ENG-4321, ABC-123). */
+const TICKET_ID_PATTERN = /^[A-Za-z]+-[0-9]+$/;
+
+/**
+ * Resolve ticket ID from branch name for use in ready/status updates.
+ * Handles: feat/ENG-4321, fix/ENG-4321, ENG-4321-stg, ENG-4321.
+ */
+export function getTicketIdFromBranch(branch: string): string | null {
+  const fromPrefix = extractIssueIdFromBranch(branch);
+  if (fromPrefix) return fromPrefix;
+  const withoutStg = branch.replace(/-stg$/, "").trim();
+  if (TICKET_ID_PATTERN.test(withoutStg)) return withoutStg;
+  return null;
+}
+
 /**
  * Get issue ID and title from current branch.
  * Extracts ID from branch name, fetches title via Linear API (uses linear auth).

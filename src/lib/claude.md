@@ -27,6 +27,7 @@
 
 - Uses `npx @schpet/linear-cli` with `cwd: homedir()`
 - **extractIssueIdFromBranch(branch):** `feat/ENG-123` → `ENG-123`; `fix/9082-stg` → `9082`
+- **getTicketIdFromBranch(branch):** Resolves ticket ID from branch (feat/ENG-4321, ENG-4321-stg, ENG-4321); for use in ready/status
 - **getIssueFromBranch():** Fetches ticket via current branch; returns `null` if no match
 
 ## External dependencies

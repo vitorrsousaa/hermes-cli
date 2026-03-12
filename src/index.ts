@@ -129,8 +129,9 @@ program
 program
   .command("ready")
   .description("Move ticket from DEV Testing to Ready for QA")
-  .action(async () => {
-    await readyCommand();
+  .option("-b, --branch <name>", "Branch to use (e.g. feat/ENG-4321 or ENG-4321-stg); default: context")
+  .action(async (options: { branch?: string }) => {
+    await readyCommand({ branch: options.branch });
   });
 
 program

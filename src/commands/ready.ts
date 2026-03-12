@@ -1,16 +1,38 @@
 import chalk from "chalk";
 import { loadContext } from "../lib/context.js";
 import { DEFAULTS } from "../lib/defaults.js";
-import { updateIssueStatus } from "../lib/linear.js";
+import {
+  updateIssueStatus,
+  getTicketIdFromBranch,
+} from "../lib/linear.js";
 import { checkPrerequisites } from "../lib/prerequisites.js";
+import { HermesError } from "../lib/errors.js";
 import { withSpinner } from "../lib/spinner.js";
 
-export async function readyCommand(): Promise<void> {
-  await checkPrerequisites(["linear"]);
-  const context = await loadContext();
-  const { ticketId } = context;
+export interface ReadyOptions {
+  /** Branch to derive ticket from (e.g. feat/ENG-4321 or ENG-4321-stg); default: context or current branch */
+  branch?: string;
+}
 
-  await withSpinner("Moving ticket to Ready for QA...", () =>
+export async function readyCommand(options: ReadyOptions = {}): Promise<void> {
+  await checkPrerequisites(["linear"]);
+
+  let ticketId: string;
+  if (options.branch) {
+    const resolved = getTicketIdFromBranch(options.branch);
+    if (!resolved) {
+      throw new HermesError(
+        `Could not extract ticket ID from branch: ${options.branch}`,
+        "Use a branch like feat/ENG-4321, fix/ENG-4321, or ENG-4321(-stg)."
+      );
+    }
+    ticketId = resolved;
+  } else {
+    const context = await loadContext();
+    ticketId = context.ticketId;
+  }
+
+  await withSpinner(`Moving ticket ${chalk.cyan(ticketId)} to Ready for QA...`, () =>
     updateIssueStatus(ticketId, DEFAULTS.linear.statusInReview)
   );
 
