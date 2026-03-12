@@ -14,6 +14,7 @@
 | `linear.ts` | `fetchIssue`, `updateIssueStatus`, `extractIssueIdFromBranch`, `getIssueFromBranch` |
 | `slack.ts` | `sendMessage(channel, text)` |
 | `prerequisites.ts` | `checkPrerequisites(["gh", "linear", "slack"])` |
+| `preview-url.ts` | `sanitizeBranchLikeWorkflow`, `getPreviewUrl` (ephemeral URL; strips -stg) |
 | `spinner.ts` | `withSpinner(text, fn)` |
 
 ## github.ts — Details

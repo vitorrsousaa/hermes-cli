@@ -10,6 +10,7 @@
 | `deployfe` | deploy.ts | gh | No | Triggers deploy workflow |
 | `test` | test.ts | gh, linear | No | Deploy + status DEV Testing (uses current branch) |
 | `cleanup` | cleanup.ts | gh | No | Cleanup Stale FE Namespaces (current branch or -b) |
+| `preview-url` | preview-url.ts | — | No | Ephemeral preview URL + copy to clipboard (-stg stripped) |
 | `clear-cache` | clear-cache.ts | — | No | Remove summary cache (branch or --all) |
 | `prc` | pr-create.ts | gh, linear | Fallback | Creates PR(s) |
 | `review` | review.ts | linear, slack | Yes | Slack + status Ready for QA |
@@ -51,6 +52,12 @@
 
 - `hermes cleanup [-b branch]`
 - Uses **current branch** by default; `-b` to specify. Triggers Cleanup Stale FE Namespaces workflow.
+
+### preview-url
+
+- `hermes preview-url [-b branch]`
+- Prints ephemeral app URL (`https://app-{sanitized}.preview.carewebs.com`) and copies to clipboard.
+- Uses same branch sanitization as deploy-feature-env workflow; if branch has `-stg`, URL uses name without `-stg`.
 
 ### clear-cache
 

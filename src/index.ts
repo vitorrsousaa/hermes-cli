@@ -12,11 +12,13 @@ import { syncCommand } from "./commands/sync.js";
 import { prCreateCommand } from "./commands/pr-create.js";
 import { updateCommand } from "./commands/update.js";
 import { pushCommand } from "./commands/push.js";
+import { mainCommand } from "./commands/main.js";
 import { deployCommand } from "./commands/deploy.js";
 import { readyCommand } from "./commands/ready.js";
 import { configSetCommand, configGetCommand } from "./commands/config.js";
 import { summaryCommand } from "./commands/summary.js";
 import { clearCacheCommand } from "./commands/clear-cache.js";
+import { previewUrlCommand } from "./commands/preview-url.js";
 
 const program = new Command();
 
@@ -81,6 +83,14 @@ program
   .option("-b, --branch <name>", "Branch to clean up (default: current branch)")
   .action(async (options: { branch?: string }) => {
     await cleanupCommand({ branch: options.branch });
+  });
+
+program
+  .command("preview-url")
+  .description("Print ephemeral preview URL and copy to clipboard (uses current branch; -stg is stripped)")
+  .option("-b, --branch <name>", "Branch to use (default: current branch)")
+  .action(async (options: { branch?: string }) => {
+    await previewUrlCommand({ branch: options.branch });
   });
 
 program
@@ -166,6 +176,13 @@ program
   .description("Push current branch to origin (no need to type the branch name)")
   .action(async () => {
     await pushCommand();
+  });
+
+program
+  .command("main")
+  .description("Checkout main and pull origin main (fast-forward only)")
+  .action(async () => {
+    await mainCommand();
   });
 
 program
