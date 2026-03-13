@@ -1,0 +1,15 @@
+---
+description: Run npm run build after modifying hermes-cli code
+globs: "**/*.ts"
+alwaysApply: false
+---
+
+# Build after edit
+
+When modifying Hermes CLI source code (files in `src/`, `tsup.config.ts`, etc.):
+
+1. **After completing changes** — run `npm run build` from the hermes-cli directory.
+2. **Purpose** — ensure the project still compiles and `dist/` is up to date.
+3. **Where to run** — always from the hermes-cli root (e.g. `cd hermes-cli && npm run build` if the workspace is the monorepo).
+
+If the build fails, fix the errors before finishing.

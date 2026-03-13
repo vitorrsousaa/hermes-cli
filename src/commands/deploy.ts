@@ -88,17 +88,24 @@ export async function deployCommand(options: DeployOptions): Promise<void> {
   await pushBranch(branchReact);
   console.log(chalk.green("✓ Branch pushed\n"));
 
-  const { url } = await triggerDeployFeatureWorkflow({
-    branchReact,
-    buildCore,
-    branchCore,
-    buildTimesheets,
-    branchTimesheets,
-    enabledSocketio,
-  });
+  console.log(chalk.gray("  Triggering workflow..."));
+  let url: string;
+  try {
+    const result = await triggerDeployFeatureWorkflow({
+      branchReact,
+      buildCore,
+      branchCore,
+      buildTimesheets,
+      branchTimesheets,
+      enabledSocketio,
+    });
+    url = result.url;
+    console.log(chalk.green("✓ Workflow triggered"));
+  } catch (err) {
+    throw err;
+  }
 
   await copyToClipboard(url);
-  console.log(chalk.green("✓ Workflow triggered"));
   console.log(chalk.gray(`  ${url}`));
   console.log(chalk.gray("  Copied to clipboard\n"));
 }
