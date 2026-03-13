@@ -61,6 +61,7 @@ hermes deployfe --no-socketio        # disable Socket.IO (enabled by default)
 ```bash
 hermes test
 hermes test --skip-summary            # Skip AI summary and Linear ticket update
+hermes test -sd                      # Skip ephemeral environment; only move ticket + optional summary (--skip-deploy)
 hermes test -c                       # Also build cw-core (branch: main)
 hermes test -c feat/xyz -t feat/abc  # Build core from feat/xyz, timesheets from feat/abc
 ```

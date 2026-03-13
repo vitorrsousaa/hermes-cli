@@ -61,6 +61,8 @@ function resolveTimesheets(options: TestOptions): { build: boolean; branch: stri
 export interface TestOptions {
   force?: boolean;
   skipSummary?: boolean;
+  /** Skip triggering ephemeral environment deploy */
+  skipDeploy?: boolean;
   /** Build cw-core; optional branch (default: main) */
   core?: boolean | string;
   /** Build cw-ms-timesheets; optional branch (default: main) */
@@ -77,18 +79,24 @@ export async function testCommand(options: TestOptions = {}): Promise<void> {
 
   debug("branch:", branch, "ticketId:", ticketId, "core:", branchCore, "timesheets:", branchTimesheets);
 
-  const { url: runUrl } = await withSpinner(
-    "Triggering ephemeral environment...",
-    () =>
-      triggerDeployFeatureWorkflow({
-        branchReact: branch,
-        buildCore,
-        branchCore,
-        buildTimesheets,
-        branchTimesheets,
-        enabledSocketio: true,
-      })
-  );
+  let runUrl: string | undefined;
+  if (!options.skipDeploy) {
+    const result = await withSpinner(
+      "Triggering ephemeral environment...",
+      () =>
+        triggerDeployFeatureWorkflow({
+          branchReact: branch,
+          buildCore,
+          branchCore,
+          buildTimesheets,
+          branchTimesheets,
+          enabledSocketio: true,
+        })
+    );
+    runUrl = result.url;
+  } else {
+    console.log(chalk.gray("\n  Skipping ephemeral environment deploy (--skip-deploy)."));
+  }
 
   if (ticketId) {
     await withSpinner("Moving ticket to DEV Testing...", () =>
@@ -98,10 +106,12 @@ export async function testCommand(options: TestOptions = {}): Promise<void> {
     console.log(chalk.gray("\n  Skipping Linear status update (branch name is not feat/XXX or fix/XXX)."));
   }
 
-  await copyToClipboard(runUrl);
-  console.log(chalk.green("\n✓ Workflow triggered"));
-  console.log(chalk.gray(`  ${runUrl}`));
-  console.log(chalk.gray("  Copied to clipboard\n"));
+  if (runUrl) {
+    await copyToClipboard(runUrl);
+    console.log(chalk.green("\n✓ Workflow triggered"));
+    console.log(chalk.gray(`  ${runUrl}`));
+    console.log(chalk.gray("  Copied to clipboard\n"));
+  }
 
   // Optional summary — best-effort, never fails hermes test
   if (options.skipSummary) {

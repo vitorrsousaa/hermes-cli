@@ -45,7 +45,7 @@
 
 ### test
 
-- `hermes test [-f|--force] [--skip-summary] [-c [branch]] [-t [branch]]`
+- `hermes test [-f|--force] [--skip-summary] [-sd|--skip-deploy] [-c [branch]] [-t [branch]]`
 - Uses **current branch** for deploy and for Linear ticket (extracted from branch name).
 - Core/timesheets: default `main`; `-c` / `-t` with optional branch to build.
 - Moves ticket to "DEV Testing" (skips if branch is not feat/XXX or fix/XXX).

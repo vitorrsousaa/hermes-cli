@@ -71,17 +71,20 @@ program
   .description("Move ticket to DEV Testing and deploy ephemeral environment (uses current branch)")
   .option("-f, --force", "Regenerate task summary even if cached")
   .option("--skip-summary", "Skip AI summary generation and Linear ticket update")
+  .option("-sd, --skip-deploy", "Skip triggering ephemeral environment deploy")
   .option("-c, --core [branch]", "Build cw-core; optional branch (default: main)")
   .option("-t, --timesheets [branch]", "Build cw-ms-timesheets; optional branch (default: main)")
   .action(async (options: {
     force?: boolean;
     skipSummary?: boolean;
+    skipDeploy?: boolean;
     core?: string | boolean;
     timesheets?: string | boolean;
   }) => {
     await testCommand({
       force: options.force,
       skipSummary: options.skipSummary,
+      skipDeploy: options.skipDeploy,
       core: options.core === true ? true : options.core,
       timesheets: options.timesheets === true ? true : options.timesheets,
     });
