@@ -33,9 +33,10 @@
 
 ### deployfe
 
-- `hermes deployfe [-r branch] [-c [branch]] [-t [branch]] [--no-socketio]`
+- `hermes deployfe [-r branch] [-c [branch]] [-sc|--same-core] [-t [branch]] [--no-socketio]`
 - `-r`: React branch (default: current)
 - `-c`: build cw-core (default: main)
+- `-sc, --same-core`: use same branch for cw-core as cw-react
 - `-t`: build cw-ms-timesheets (default: main)
 - `--no-socketio`: disable Socket.IO
 

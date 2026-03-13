@@ -46,10 +46,11 @@ hermes start <ticket-id>
 
 ```bash
 hermes deployfe
-hermes deployfe -c                    # also build cw-core (branch: main)
-hermes deployfe -c feat/xyz           # build cw-core from feat/xyz
-hermes deployfe -t                    # also build cw-ms-timesheets (branch: main)
-hermes deployfe --no-socketio         # disable Socket.IO (enabled by default)
+hermes deployfe -sc                  # same branch for cw-core as cw-react (--same-core)
+hermes deployfe -c                   # also build cw-core (branch: main)
+hermes deployfe -c feat/xyz          # build cw-core from feat/xyz
+hermes deployfe -t                   # also build cw-ms-timesheets (branch: main)
+hermes deployfe --no-socketio        # disable Socket.IO (enabled by default)
 ```
 
 - Triggers the "Deploy Feature Environment" workflow

@@ -44,17 +44,20 @@ program
   .description("Deploy feature environment (ephemeral)")
   .option("-r, --react [branch]", "React branch (default: current branch)")
   .option("-c, --core [branch]", "Build cw-core; optional branch (default: main)")
+  .option("-sc, --same-core", "Use same branch for cw-core as cw-react")
   .option("-t, --timesheets [branch]", "Build cw-ms-timesheets; optional branch (default: main)")
   .option("--no-socketio", "Disable Socket.IO (enabled by default)")
   .action(async (options: {
     react?: string;
     core?: string | boolean;
+    sameCore?: boolean;
     timesheets?: string | boolean;
     socketio?: boolean;
   }) => {
     await deployCommand({
       react: typeof options.react === "string" ? options.react : undefined,
       core: options.core === true ? true : options.core,
+      sameCore: options.sameCore,
       timesheets: options.timesheets === true ? true : options.timesheets,
       socketio: options.socketio,
     });

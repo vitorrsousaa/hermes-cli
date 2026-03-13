@@ -40,6 +40,8 @@ export interface DeployOptions {
   react?: string;
   /** Build cw-core; if true, use coreBranch (default: main) */
   core?: boolean | string;
+  /** Use same branch for cw-core as cw-react */
+  sameCore?: boolean;
   /** Build cw-ms-timesheets; if true, use timesheetsBranch (default: main) */
   timesheets?: boolean | string;
   /** Enable Socket.IO (default: true) */
@@ -67,7 +69,10 @@ export async function deployCommand(options: DeployOptions): Promise<void> {
 
   const branchReact =
     options.react ?? (await getCurrentBranch());
-  const { build: buildCore, branch: branchCore } = resolveCore(options);
+  const coreResolved = options.sameCore
+    ? { build: true, branch: branchReact }
+    : resolveCore(options);
+  const { build: buildCore, branch: branchCore } = coreResolved;
   const { build: buildTimesheets, branch: branchTimesheets } =
     resolveTimesheets(options);
   const enabledSocketio = options.socketio !== false;
