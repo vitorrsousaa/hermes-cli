@@ -6,6 +6,7 @@
 
 | Command | File | Prereq | Context | Description |
 |---------|------|--------|---------|-------------|
+| `config` | config.ts | — | No | Configure Hermes keys (interactive) |
 | `start` | start.ts | gh, linear | Creates | Creates branch and context |
 | `deployfe` | deploy.ts | gh | No | Triggers deploy workflow |
 | `test` | test.ts | gh, linear | No | Deploy + status DEV Testing (uses current branch) |

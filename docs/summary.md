@@ -12,7 +12,7 @@ hermes summary [-f|--force]
 
 Generates an AI-powered task summary from git diffs across all configured repositories. Uses Claude API to produce a structured template (task title, dev notes, QA instructions, tests) from the changes since `main`.
 
-Requires `claude-api-key` to be configured. Run `hermes config set claude-api-key <your-key>` first.
+Requires `claude-api-key` to be configured. Run `hermes config` e informe a sua key quando solicitado (ou use `hermes config set claude-api-key <your-key>`). 
 
 ## Options
 

@@ -1,4 +1,5 @@
 import chalk from "chalk";
+import inquirer from "inquirer";
 import { getClaudeApiKey, setClaudeApiKey } from "../lib/config.js";
 import { HermesError } from "../lib/errors.js";
 
@@ -35,4 +36,53 @@ export async function configGetCommand(key: string): Promise<void> {
       console.log(chalk.gray(`claude-api-key: ${masked}`));
     }
   }
+}
+
+export async function configInteractiveCommand(): Promise<void> {
+  console.log(
+    chalk.gray(
+      "Configuração do Hermes. Pressione Enter para manter o valor atual de uma key."
+    )
+  );
+
+  const currentClaudeApiKey = await getClaudeApiKey();
+
+  if (!currentClaudeApiKey) {
+    console.log(chalk.gray("claude-api-key: (não configurada)"));
+  } else {
+    const masked = `${currentClaudeApiKey.slice(0, 10)}****...`;
+    console.log(chalk.gray(`claude-api-key atual: ${masked}`));
+  }
+
+  const answers = await inquirer.prompt([
+    {
+      name: "claudeApiKey",
+      type: "password",
+      message: "claude-api-key (Claude API key):",
+      mask: "*",
+      validate: (input: string) => {
+        if (!input && !currentClaudeApiKey) {
+          return "Informe uma key ou cancele com Ctrl+C.";
+        }
+        return true;
+      },
+    },
+  ]);
+
+  const nextClaudeApiKey = (answers as { claudeApiKey?: string }).claudeApiKey
+    ? (answers as { claudeApiKey?: string }).claudeApiKey
+    : currentClaudeApiKey;
+
+  if (!nextClaudeApiKey) {
+    console.log(chalk.yellow("Nenhuma claude-api-key foi configurada."));
+    return;
+  }
+
+  if (nextClaudeApiKey === currentClaudeApiKey) {
+    console.log(chalk.gray("claude-api-key mantida sem alterações."));
+    return;
+  }
+
+  await setClaudeApiKey(nextClaudeApiKey);
+  console.log(chalk.green("✓ claude-api-key salva com sucesso"));
 }

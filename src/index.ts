@@ -15,7 +15,11 @@ import { pushCommand } from "./commands/push.js";
 import { mainCommand } from "./commands/main.js";
 import { deployCommand } from "./commands/deploy.js";
 import { readyCommand } from "./commands/ready.js";
-import { configSetCommand, configGetCommand } from "./commands/config.js";
+import {
+  configGetCommand,
+  configInteractiveCommand,
+  configSetCommand,
+} from "./commands/config.js";
 import { summaryCommand } from "./commands/summary.js";
 import { clearCacheCommand } from "./commands/clear-cache.js";
 import { previewUrlCommand } from "./commands/preview-url.js";
@@ -200,7 +204,10 @@ program
 
 const configCmd = program
   .command("config")
-  .description("Manage Hermes configuration");
+  .description("Manage Hermes configuration (interactive)")
+  .action(async () => {
+    await configInteractiveCommand();
+  });
 
 configCmd
   .command("set <key> <value>")
