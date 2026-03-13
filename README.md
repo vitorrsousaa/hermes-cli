@@ -26,7 +26,7 @@ npm run build && npm link
 
   Run `linear auth` first — hermes uses the Linear CLI's stored credentials.
 
-- **Claude API key** (optional, for `hermes test` summary): `hermes config set claude-api-key <key>`. Without it, `hermes test` skips AI summary generation and Linear ticket update. Use `--skip-summary` to skip these steps explicitly.
+- **Claude API key** (optional, for `hermes test` summary): `hermes config set claude-api-key <key>`. Without it, `hermes test` skips AI summary generation and Linear ticket update. Use `-ss` or `--skip-summary` to skip these steps explicitly.
 
 ## Full Workflow
 
@@ -60,7 +60,7 @@ hermes deployfe --no-socketio        # disable Socket.IO (enabled by default)
 
 ```bash
 hermes test
-hermes test --skip-summary            # Skip AI summary and Linear ticket update
+hermes test -ss                       # Skip AI summary and Linear ticket update (-ss / --skip-summary)
 hermes test -sd                      # Skip ephemeral environment; only move ticket + optional summary (--skip-deploy)
 hermes test -c                       # Also build cw-core (branch: main)
 hermes test -c feat/xyz -t feat/abc  # Build core from feat/xyz, timesheets from feat/abc
@@ -69,7 +69,7 @@ hermes test -c feat/xyz -t feat/abc  # Build core from feat/xyz, timesheets from
 - Uses **current branch** for React and for the Linear ticket (derived from branch name `feat/XXX` or `fix/XXX`).
 - Core/Timesheets: `main` by default; use `-c` / `-t` with optional branch to build them.
 - Triggers the deploy workflow, moves ticket to "DEV Testing", copies workflow URL.
-- **Optional summary**: If `claude-api-key` is set, generates AI task summary and updates Linear title. Use `--skip-summary` to skip.
+- **Optional summary**: If `claude-api-key` is set, generates AI task summary and updates Linear title. Use `-ss` or `--skip-summary` to skip.
 
 ### 4. Create pull request
 

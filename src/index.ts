@@ -70,7 +70,7 @@ program
   .command("test")
   .description("Move ticket to DEV Testing and deploy ephemeral environment (uses current branch)")
   .option("-f, --force", "Regenerate task summary even if cached")
-  .option("--skip-summary", "Skip AI summary generation and Linear ticket update")
+  .option("-ss, --skip-summary", "Skip AI summary generation and Linear ticket update")
   .option("-sd, --skip-deploy", "Skip triggering ephemeral environment deploy")
   .option("-c, --core [branch]", "Build cw-core; optional branch (default: main)")
   .option("-t, --timesheets [branch]", "Build cw-ms-timesheets; optional branch (default: main)")
