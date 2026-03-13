@@ -5,8 +5,8 @@ import { collectDiffs, buildSummaryCachePath } from "../lib/diff.js";
 import { generateTaskSummary, type TaskSummaryData } from "../lib/claude.js";
 import { HermesError } from "../lib/errors.js";
 import { withSpinner } from "../lib/spinner.js";
-import { loadContext } from "../lib/context.js";
 import { getCurrentBranch } from "../lib/git.js";
+import { fetchIssue, getTicketIdFromBranch } from "../lib/linear.js";
 
 function renderSummary(data: TaskSummaryData): void {
   console.log(chalk.bold.cyan("\nTASK TITLE"));
@@ -44,15 +44,18 @@ export async function summaryCommand(options: { force?: boolean } = {}): Promise
     );
   }
 
+  const branch = await getCurrentBranch();
+  const ticketId = getTicketIdFromBranch(branch);
   let context: { ticketId?: string; ticketTitle?: string } | undefined;
-  try {
-    const ctx = await loadContext();
-    context = { ticketId: ctx.ticketId, ticketTitle: ctx.ticketTitle };
-  } catch {
-    // No active context — proceed without it
+  if (ticketId) {
+    try {
+      const issue = await fetchIssue(ticketId);
+      context = { ticketId: issue.id, ticketTitle: issue.title };
+    } catch {
+      context = { ticketId };
+    }
   }
 
-  const branch = await getCurrentBranch();
   const cachePath = buildSummaryCachePath(branch);
 
   if (!options.force) {

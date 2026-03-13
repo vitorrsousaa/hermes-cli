@@ -1,5 +1,5 @@
 import chalk from "chalk";
-import { loadContext } from "../lib/context.js";
+import { getCurrentBranch } from "../lib/git.js";
 import { DEFAULTS } from "../lib/defaults.js";
 import {
   updateIssueStatus,
@@ -10,7 +10,7 @@ import { HermesError } from "../lib/errors.js";
 import { withSpinner } from "../lib/spinner.js";
 
 export interface ReadyOptions {
-  /** Branch to derive ticket from (e.g. feat/ENG-4321 or ENG-4321-stg); default: context or current branch */
+  /** Branch to derive ticket from (e.g. feat/ENG-4321 or ENG-4321-stg); default: current branch */
   branch?: string;
 }
 
@@ -28,8 +28,15 @@ export async function readyCommand(options: ReadyOptions = {}): Promise<void> {
     }
     ticketId = resolved;
   } else {
-    const context = await loadContext();
-    ticketId = context.ticketId;
+    const branch = await getCurrentBranch();
+    const resolved = getTicketIdFromBranch(branch);
+    if (!resolved) {
+      throw new HermesError(
+        "Could not extract ticket ID from current branch.",
+        "Use a branch like feat/ENG-4321, fix/ENG-4321, or pass -b <branch>."
+      );
+    }
+    ticketId = resolved;
   }
 
   await withSpinner(`Moving ticket ${chalk.cyan(ticketId)} to Ready for QA...`, () =>

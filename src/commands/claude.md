@@ -7,15 +7,15 @@
 | Command | File | Prereq | Context | Description |
 |---------|------|--------|---------|-------------|
 | `config` | config.ts | — | No | Configure Hermes keys (interactive) |
-| `start` | start.ts | gh, linear | Creates | Creates branch and context |
+| `start` | start.ts | gh, linear | No | Creates branch |
 | `deployfe` | deploy.ts | gh | No | Triggers deploy workflow |
 | `test` | test.ts | gh, linear | No | Deploy + status DEV Testing (uses current branch) |
 | `cleanup` | cleanup.ts | gh | No | Cleanup Stale FE Namespaces (current branch or -b) |
 | `preview-url` | preview-url.ts | — | No | Ephemeral preview URL + copy to clipboard (-stg stripped) |
 | `clear-cache` | clear-cache.ts | — | No | Remove summary cache (branch or --all) |
-| `prc` | pr-create.ts | gh, linear | Fallback | Creates PR(s) |
-| `review` | review.ts | linear, slack | Yes | Slack + status Ready for QA |
-| `ready` | ready.ts | linear | Yes | Status DEV Testing → Ready for QA |
+| `prc` | pr-create.ts | gh, linear | No | Creates PR(s) (ticket from branch) |
+| `review` | review.ts | linear, slack | No | Slack + status Ready for QA (ticket/PR from branch) |
+| `ready` | ready.ts | linear | No | Status DEV Testing → Ready for QA (ticket from branch or -b) |
 | `branch` | branch.ts | — | No | Branch name ± clipboard |
 | `toggle` | toggle.ts | — | No | Switch main ↔ -stg |
 | `sync` | sync.ts | — | No | Sync main → -stg |
@@ -30,7 +30,6 @@
 
 - `hermes start <ticket-id> [-t feat|fix]`
 - Creates branch `feat/<id>` or `fix/<id>` from `main`
-- Saves context; adds `.hermes-context.json` to `.gitignore`
 
 ### deployfe
 
@@ -77,7 +76,7 @@
 ### review
 
 - `hermes review`
-- Requires `prUrl` in context (run `hermes prc` first)
+- Requires a PR for current branch (run `hermes prc` first). Gets ticket from branch, PR URL via `gh pr view`.
 - Sends message on Slack #pr
 - Moves ticket to "Ready for QA"
 
@@ -85,7 +84,7 @@
 
 - `hermes ready [-b branch]`
 - Moves ticket from "DEV Testing" to "Ready for QA"
-- Without `-b`: uses ticket from context. With `-b`: derives ticket from branch (e.g. `feat/ENG-4321`, `ENG-4321-stg`, `ENG-4321`).
+- Without `-b`: derives ticket from current branch. With `-b`: derives ticket from given branch (e.g. `feat/ENG-4321`, `ENG-4321-stg`, `ENG-4321`).
 - No Slack message; use when handing off to QA without review request
 
 ### branch

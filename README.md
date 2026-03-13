@@ -41,7 +41,6 @@ hermes start <ticket-id>
 - Fetches the ticket from Linear
 - Moves it to "In Progress"
 - Creates branch `feat/<id>` or `fix/<id>` (use `--type fix` for fix)
-- Saves context to `.hermes-context.json`
 
 ### 2. Deploy ephemeral environment
 
@@ -82,7 +81,7 @@ hermes prc -d
 hermes prc -t main -d
 ```
 
-Creates PR(s) with title `[TICKET-ID] Title` and pre-filled template. Uses ticket info from context (`.hermes-context.json`) or from the current branch name. Copies URL to clipboard and saves `prUrl` and `prNumber` to context.
+Creates PR(s) with title `[TICKET-ID] Title` and pre-filled template. Uses ticket info from the current branch name (e.g. `feat/ENG-123`). Copies URL to clipboard.
 
 For `-t stg`: uses the branch with `-stg` suffix (e.g. `feat/ENG-123-stg`). If it doesn't exist, creates it from the current branch and pushes before opening the PR.
 

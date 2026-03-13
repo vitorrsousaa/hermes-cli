@@ -1,6 +1,6 @@
 # summary
 
-> See also: [workflow.md](workflow.md), [context.md](context.md), [test.md](test.md)
+> See also: [workflow.md](workflow.md), [test.md](test.md)
 
 ## Synopsis
 
@@ -28,9 +28,9 @@ Requires `claude-api-key` to be configured. Run `hermes config` e informe a sua 
 
 Without `--force`, returns cached content if available. With `--force`, always regenerates.
 
-## Context
+## Ticket context
 
-If `.hermes-context.json` exists (from `hermes start`), the ticket ID and title are passed to Claude for better output. If no context exists, the command still runs but without ticket context.
+Ticket ID and title are derived from the current branch (e.g. `feat/ENG-123`). If the branch matches a Linear ticket, they are passed to Claude for better output; otherwise the command runs without ticket context.
 
 ## Output
 

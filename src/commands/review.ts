@@ -1,29 +1,37 @@
 import chalk from "chalk";
 import { HermesError } from "../lib/errors.js";
 import { checkPrerequisites } from "../lib/prerequisites.js";
-import { loadContext } from "../lib/context.js";
+import { getCurrentBranch } from "../lib/git.js";
+import { getCurrentPrUrl } from "../lib/github.js";
 import { sendMessage } from "../lib/slack.js";
-import { updateIssueStatus } from "../lib/linear.js";
+import { fetchIssue, getTicketIdFromBranch, updateIssueStatus } from "../lib/linear.js";
 import { DEFAULTS } from "../lib/defaults.js";
 import { withSpinner } from "../lib/spinner.js";
 
 export async function reviewCommand(): Promise<void> {
   await checkPrerequisites(["linear", "slack"]);
-  const context = await loadContext();
-  const { ticketId, ticketTitle, prUrl, ephemeralEnvUrl } = context;
-
+  const branch = await getCurrentBranch();
+  const ticketId = getTicketIdFromBranch(branch);
+  if (!ticketId) {
+    throw new HermesError(
+      "Could not extract ticket ID from current branch.",
+      "Use a branch like feat/ENG-4321 or fix/ENG-4321, or run hermes prc from that branch first."
+    );
+  }
+  const issue = await withSpinner("Fetching ticket...", () => fetchIssue(ticketId));
+  const prUrl = await getCurrentPrUrl();
   if (!prUrl) {
     throw new HermesError(
-      "No PR created.",
+      "No PR found for current branch.",
       "Run hermes prc first."
     );
   }
 
   const message = [
     "🔍 *Ready for review*",
-    `*[${ticketId}] ${ticketTitle}*`,
+    `*[${issue.id}] ${issue.title}*`,
     `PR: ${prUrl}`,
-    `Preview: ${ephemeralEnvUrl ?? "Not available"}`,
+    "Preview: Not available",
   ].join("\n");
 
   await withSpinner("Sending message on Slack...", () =>

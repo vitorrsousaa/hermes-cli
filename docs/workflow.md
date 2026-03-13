@@ -1,16 +1,16 @@
 # Workflow
 
-> See also: [context.md](context.md) (context), [conventions.md](conventions.md) (branch conventions)
+> See also: [conventions.md](conventions.md) (branch conventions)
 
 ## Typical sequence
 
-1. **`hermes start <ticket-id>`** — Fetches ticket from Linear, moves to "In Progress", creates branch `feat/<id>` or `fix/<id>`, saves context to `.hermes-context.json`.
+1. **`hermes start <ticket-id>`** — Fetches ticket from Linear, moves to "In Progress", creates branch `feat/<id>` or `fix/<id>`.
 
 2. **`hermes deployfe`** — Triggers "Deploy Feature Environment" workflow. Uses current branch; optional `-c`/`-t` for core/timesheets (default: main).
 
 3. **`hermes test`** — Uses current branch; triggers deploy, moves ticket to "DEV Testing", copies workflow URL. Optional `-c`/`-t` for core/timesheets (default: main). Optionally generates AI task summary (see [test.md](test.md)).
 
-4. **`hermes prc`** — Creates PR(s) to stg/main/both with title `[TICKET-ID] Title`, uses context or branch.
+4. **`hermes prc`** — Creates PR(s) to stg/main/both with title `[TICKET-ID] Title` (ticket from branch name).
 
 5. **`hermes review`** — Sends message on Slack (#pr) and moves ticket to "Ready for QA".
 

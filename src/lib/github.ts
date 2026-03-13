@@ -155,3 +155,20 @@ export async function copyToClipboard(text: string): Promise<void> {
     // Best-effort: fail silently in headless/SSH
   }
 }
+
+/** Get PR URL for the current branch (if a PR exists). */
+export async function getCurrentPrUrl(): Promise<string | null> {
+  try {
+    const { stdout } = await execa("gh", [
+      "pr",
+      "view",
+      "--json",
+      "url",
+      "-q",
+      ".url",
+    ]);
+    return (stdout?.trim() && stdout.trim()) || null;
+  } catch {
+    return null;
+  }
+}

@@ -1,16 +1,15 @@
 # Lib — Shared utilities
 
-> See also: [../../docs/context.md](../../docs/context.md), [../../docs/conventions.md](../../docs/conventions.md)
+> See also: [../../docs/conventions.md](../../docs/conventions.md)
 
 ## Modules
 
 | File | Description |
 |------|-------------|
-| `context.ts` | `.hermes-context.json`: load, save, getRepoRoot, ensureGitignore |
 | `defaults.ts` | Constants (Linear statuses, workflows, Slack channel) |
 | `errors.ts` | `HermesError(message, hint?)` |
 | `git.ts` | `getCurrentBranch()`, `branchExists(branch)` |
-| `github.ts` | `triggerWorkflow`, `waitForRun`, `createPr`, `copyToClipboard` |
+| `github.ts` | `triggerWorkflow`, `waitForRun`, `createPr`, `copyToClipboard`, `getCurrentPrUrl` |
 | `linear.ts` | `fetchIssue`, `updateIssueStatus`, `extractIssueIdFromBranch`, `getIssueFromBranch` |
 | `slack.ts` | `sendMessage(channel, text)` |
 | `prerequisites.ts` | `checkPrerequisites(["gh", "linear", "slack"])` |
@@ -21,6 +20,7 @@
 
 - **triggerWorkflow(workflow, inputs?, options?):** Triggers via `gh workflow run`; uses `ref: main` (or inputs.branch). Returns `{ runId, url }`.
 - **createPr(options):** `gh pr create`; returns `{ url, number }`.
+- **getCurrentPrUrl():** `gh pr view --json url`; returns PR URL for current branch or null.
 - **copyToClipboard(text):** Best-effort; fails silently in headless/SSH.
 
 ## linear.ts — Details

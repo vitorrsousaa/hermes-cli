@@ -1,11 +1,5 @@
 import chalk from "chalk";
 import { execa } from "execa";
-import {
-  ensureGitignore,
-  getRepoRoot,
-  saveContext,
-  type HermesContext,
-} from "../lib/context.js";
 import { fetchIssue, updateIssueStatus } from "../lib/linear.js";
 import { checkPrerequisites } from "../lib/prerequisites.js";
 import { DEFAULTS } from "../lib/defaults.js";
@@ -36,22 +30,6 @@ export async function startCommand(
     await execa("git", ["checkout", "-b", branch]);
   });
 
-  const root = await getRepoRoot();
-  const context: HermesContext = {
-    ticketId,
-    ticketTitle: issue.title,
-    ticketUrl: issue.url,
-    branch,
-    ephemeralEnvUrl: null,
-    prUrl: null,
-    prNumber: null,
-    startedAt: new Date().toISOString(),
-  };
-
-  await saveContext(context);
-  await ensureGitignore();
-
   console.log(chalk.green("\n✓ Ticket active"));
   console.log(chalk.gray(`  Branch: ${branch}`));
-  console.log(chalk.gray(`  Context: ${root}/.hermes-context.json`));
 }

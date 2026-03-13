@@ -108,7 +108,7 @@ program
 
 program
   .command("prc")
-  .description("Create PR to stg, main, or both (uses Linear issue from context or branch)")
+  .description("Create PR to stg, main, or both (uses Linear issue from branch name)")
   .option("-t, --target <stg|main|both>", "Target branch(es)", "stg")
   .option("-d, --draft", "Create as draft PR")
   .action(async (options: { target?: string; draft?: boolean }) => {
@@ -133,7 +133,7 @@ program
 program
   .command("ready")
   .description("Move ticket from DEV Testing to Ready for QA")
-  .option("-b, --branch <name>", "Branch to use (e.g. feat/ENG-4321 or ENG-4321-stg); default: context")
+  .option("-b, --branch <name>", "Branch to use (e.g. feat/ENG-4321 or ENG-4321-stg); default: current branch")
   .action(async (options: { branch?: string }) => {
     await readyCommand({ branch: options.branch });
   });

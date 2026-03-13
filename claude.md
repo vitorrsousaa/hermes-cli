@@ -13,7 +13,6 @@ Hermes is a CLI that automates the development workflow between **Linear**, **Gi
 | Document | Content |
 |----------|---------|
 | [docs/workflow.md](docs/workflow.md) | Typical workflow |
-| [docs/context.md](docs/context.md) | `.hermes-context.json` file |
 | [docs/conventions.md](docs/conventions.md) | Branch conventions, defaults, integrations |
 | [docs/development.md](docs/development.md) | Development, debug, patterns, adding commands |
 | [docs/test.md](docs/test.md) | `hermes test` command |
@@ -31,7 +30,6 @@ hermes-cli/
 ├── claude.md              # This file
 ├── docs/                  # Documentation
 │   ├── workflow.md
-│   ├── context.md
 │   ├── conventions.md
 │   └── development.md
 ├── src/
@@ -49,4 +47,4 @@ hermes-cli/
 
 ## Important note
 
-Hermes runs **inside an app repository** (e.g. `cw-react`), not in the `hermes-cli` folder. `getRepoRoot()` uses `git rev-parse --show-toplevel` to find the repo root where `.hermes-context.json` lives.
+Hermes runs **inside an app repository** (e.g. `cw-react`), not in the `hermes-cli` folder. Commands derive ticket and branch from the current git branch (e.g. `feat/ENG-123`).
