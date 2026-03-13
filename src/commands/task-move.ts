@@ -1,14 +1,14 @@
 import chalk from "chalk";
 import inquirer from "inquirer";
+import { LINEAR_WORKFLOW_STATUSES } from "../lib/defaults.js";
+import { HermesError } from "../lib/errors.js";
 import { getCurrentBranch } from "../lib/git.js";
 import {
   fetchIssue,
   getTicketIdFromBranch,
   updateIssueStatus,
 } from "../lib/linear.js";
-import { LINEAR_WORKFLOW_STATUSES } from "../lib/defaults.js";
 import { checkPrerequisites } from "../lib/prerequisites.js";
-import { HermesError } from "../lib/errors.js";
 import { withSpinner } from "../lib/spinner.js";
 
 export interface TaskMoveOptions {
@@ -36,13 +36,17 @@ export async function taskMoveCommand(
   }
 
   const issue = await withSpinner("Fetching ticket…", () => fetchIssue(ticketId));
-  console.log(chalk.gray(`Current status: ${issue.status}`));
+
+  console.log(chalk.bold(issue.title));
+  console.log(chalk.cyan(issue.url));
+  console.log(chalk.green(`Current status: ${issue.status || "(unknown)"}`));
+  console.log("");
 
   const { newStatus } = await inquirer.prompt<{ newStatus: string }>([
     {
       type: "list",
       name: "newStatus",
-      message: "Novo status:",
+      message: "New status:",
       choices: [...LINEAR_WORKFLOW_STATUSES],
     },
   ]);

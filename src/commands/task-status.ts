@@ -33,5 +33,5 @@ export async function taskStatusCommand(
 
   console.log(chalk.bold(issue.title));
   console.log(chalk.cyan(issue.url));
-  console.log(chalk.green(`Status: ${issue.status}`));
+  console.log(chalk.green(`Status: ${issue.status || "(unknown)"}`));
 }

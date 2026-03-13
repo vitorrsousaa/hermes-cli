@@ -4,6 +4,7 @@ import { writeFile, unlink } from "fs/promises";
 import { execa } from "execa";
 import { HermesError } from "./errors.js";
 import { getCurrentBranch } from "./git.js";
+import { LINEAR_WORKFLOW_STATUSES } from "./defaults.js";
 
 export interface LinearEnv {
   apiKey: string;
@@ -53,8 +54,20 @@ function parseIssueOutput(issueId: string, output: string): LinearIssue {
       status = trimmed.replace(/^status:?\s+/i, "").trim();
     } else if (/^state:?\s+/i.test(trimmed)) {
       status = trimmed.replace(/^state:?\s+/i, "").trim();
+    } else if (/^\*\*(?:state|status)\*\*:?\s*/i.test(trimmed)) {
+      status = trimmed.replace(/^\*\*(?:state|status)\*\*:?\s*/i, "").trim();
     } else if (trimmed && !url && /^https?:\/\//.test(trimmed)) {
       url = trimmed;
+    }
+  }
+
+  // Fallback: CLI may show state in another format; search for known status labels in full output
+  if (!status) {
+    for (const known of LINEAR_WORKFLOW_STATUSES) {
+      if (output.includes(known)) {
+        status = known;
+        break;
+      }
     }
   }
 
