@@ -26,3 +26,8 @@ export async function branchExistsOnRemote(remote: string, branch: string): Prom
   return (result.stdout?.trim().length ?? 0) > 0;
 }
 
+/** Pushes the given branch to origin. */
+export async function pushBranch(branch: string, remote = "origin"): Promise<void> {
+  await execa("git", ["push", "-u", remote, branch]);
+}
+

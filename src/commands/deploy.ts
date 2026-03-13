@@ -1,6 +1,6 @@
 import chalk from "chalk";
 import { checkPrerequisites } from "../lib/prerequisites.js";
-import { getCurrentBranch } from "../lib/git.js";
+import { getCurrentBranch, pushBranch } from "../lib/git.js";
 import {
   triggerWorkflow,
   copyToClipboard,
@@ -83,6 +83,10 @@ export async function deployCommand(options: DeployOptions): Promise<void> {
   console.log(chalk.gray(`  Timesheets:   ${buildTimesheets ? branchTimesheets : "—"}`));
   console.log(chalk.gray(`  Socket.IO:    ${enabledSocketio ? "on" : "off"}`));
   console.log("");
+
+  console.log(chalk.gray(`  Pushing branch ${branchReact}...`));
+  await pushBranch(branchReact);
+  console.log(chalk.green("✓ Branch pushed\n"));
 
   const { url } = await triggerDeployFeatureWorkflow({
     branchReact,
