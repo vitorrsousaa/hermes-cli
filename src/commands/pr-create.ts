@@ -1,7 +1,6 @@
 import chalk from "chalk";
 import { execa } from "execa";
 import { checkPrerequisites } from "../lib/prerequisites.js";
-import { loadContext } from "../lib/context.js";
 import { createPr, copyToClipboard } from "../lib/github.js";
 import { getCurrentBranch, branchExists, hasUncommittedChanges } from "../lib/git.js";
 import { getIssueFromBranch } from "../lib/linear.js";
@@ -37,34 +36,6 @@ function resolveBasesForTarget(target: Target): { base: string; useStgBranch: bo
   if (target === "both") return [{ base: "main", useStgBranch: false }, { base: "staging", useStgBranch: true }];
   if (target === "stg") return [{ base: "staging", useStgBranch: true }];
   return [{ base: "main", useStgBranch: false }];
-}
-
-async function getTicketInfo(): Promise<{
-  ticketId: string;
-  ticketTitle: string;
-  ticketUrl: string;
-}> {
-  try {
-    const context = await loadContext();
-    return {
-      ticketId: context.ticketId,
-      ticketTitle: context.ticketTitle,
-      ticketUrl: context.ticketUrl,
-    };
-  } catch {
-    const issue = await getIssueFromBranch();
-    if (!issue) {
-      throw new HermesError(
-        "Could not get ticket info.",
-        "Run hermes start <ticket-id> first, or ensure you're on a branch with a Linear issue (e.g. feat/ENG-123, fix/9082)."
-      );
-    }
-    return {
-      ticketId: issue.id,
-      ticketTitle: issue.title,
-      ticketUrl: issue.url,
-    };
-  }
 }
 
 /** Ensures stg branch exists and checks out to it. mainBranch has no -stg suffix. */
@@ -110,8 +81,6 @@ export async function prCreateCommand(options: {
   const target = options.target ?? "stg";
   const draft = options.draft ?? false;
 
-  const { ticketId, ticketTitle } = await getTicketInfo();
-  const title = formatPrTitle(ticketId, ticketTitle);
   const bases = resolveBasesForTarget(target);
   const currentBranch = await getCurrentBranch();
   const mainBranch = currentBranch.endsWith(DEFAULT_STG_SUFFIX)
@@ -128,6 +97,10 @@ export async function prCreateCommand(options: {
   const urls: string[] = [];
 
   try {
+    await withSpinner("Push current branch...", () =>
+      execa("git", ["push", "-u", "origin", currentBranch])
+    );
+
     for (const { base, useStgBranch } of bases) {
     if (useStgBranch) {
       await ensureStgBranchAndCheckout(mainBranch);
@@ -140,6 +113,14 @@ export async function prCreateCommand(options: {
     const headBranch = useStgBranch
       ? `${mainBranch}${DEFAULT_STG_SUFFIX}`
       : mainBranch;
+    const issue = await getIssueFromBranch();
+    if (!issue) {
+      throw new HermesError(
+        `Could not get ticket info from branch "${headBranch}".`,
+        "Ensure the branch name contains a Linear issue (e.g. feat/ENG-123, fix/9082)."
+      );
+    }
+    const title = formatPrTitle(issue.id, issue.title);
     const commits = await getCommitsList(base, headBranch);
     const body = commits ? `## Commits\n\n${commits}` : "";
     const label = draft ? "draft " : "";
