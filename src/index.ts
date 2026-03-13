@@ -23,6 +23,8 @@ import {
 import { summaryCommand } from "./commands/summary.js";
 import { clearCacheCommand } from "./commands/clear-cache.js";
 import { previewUrlCommand } from "./commands/preview-url.js";
+import { taskStatusCommand } from "./commands/task-status.js";
+import { taskMoveCommand } from "./commands/task-move.js";
 
 const program = new Command();
 
@@ -139,6 +141,26 @@ program
   .option("-b, --branch <name>", "Branch to use (e.g. feat/ENG-4321 or ENG-4321-stg); default: current branch")
   .action(async (options: { branch?: string }) => {
     await readyCommand({ branch: options.branch });
+  });
+
+const taskCmd = program
+  .command("task")
+  .description("Show or change the current task (Linear ticket) status");
+
+taskCmd
+  .command("status")
+  .description("Show current task ID, title, URL and status")
+  .option("-b, --branch <name>", "Branch to use (default: current branch)")
+  .action(async (options: { branch?: string }) => {
+    await taskStatusCommand({ branch: options.branch });
+  });
+
+taskCmd
+  .command("move")
+  .description("Change task status (choose from list)")
+  .option("-b, --branch <name>", "Branch to use (default: current branch)")
+  .action(async (options: { branch?: string }) => {
+    await taskMoveCommand({ branch: options.branch });
   });
 
 program

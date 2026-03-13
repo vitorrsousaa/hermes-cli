@@ -16,3 +16,10 @@ export const DEFAULTS = {
     command: "claude run test-info",
   },
 } as const;
+
+/** Ordered list of workflow statuses for `hermes task move` (single source for inquirer choices). */
+export const LINEAR_WORKFLOW_STATUSES: readonly string[] = [
+  DEFAULTS.linear.statusInProgress,
+  DEFAULTS.linear.statusDevTesting,
+  DEFAULTS.linear.statusInReview,
+];

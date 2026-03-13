@@ -16,6 +16,8 @@
 | `prc` | pr-create.ts | gh, linear | No | Creates PR(s) (ticket from branch) |
 | `review` | review.ts | linear, slack | No | Slack + status Ready for QA (ticket/PR from branch) |
 | `ready` | ready.ts | linear | No | Status DEV Testing → Ready for QA (ticket from branch or -b) |
+| `task status` | task-status.ts | linear | No | Show task ID, title, URL, status (branch or -b) |
+| `task move` | task-move.ts | linear | No | Change task status via list (branch or -b) |
 | `branch` | branch.ts | — | No | Branch name ± clipboard |
 | `toggle` | toggle.ts | — | No | Switch main ↔ -stg |
 | `sync` | sync.ts | — | No | Sync main → -stg |
@@ -87,6 +89,18 @@
 - Moves ticket from "DEV Testing" to "Ready for QA"
 - Without `-b`: derives ticket from current branch. With `-b`: derives ticket from given branch (e.g. `feat/ENG-4321`, `ENG-4321-stg`, `ENG-4321`).
 - No Slack message; use when handing off to QA without review request
+
+### task status
+
+- `hermes task status [-b branch]`
+- Shows current task: title, URL, status. Ticket ID from current branch or `-b`.
+- Prereq: linear (run linear auth first).
+
+### task move
+
+- `hermes task move [-b branch]`
+- Changes task status; user selects new status from a list (In Progress, DEV Testing, Ready for QA).
+- Ticket from current branch or `-b`. Prereq: linear.
 
 ### branch
 
