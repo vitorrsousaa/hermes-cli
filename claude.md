@@ -2,7 +2,7 @@
 
 ## Overview
 
-Hermes is a CLI that automates the development workflow between **Linear**, **GitHub**, and **Slack**, eliminating manual tasks (~15–20 min per ticket) when transitioning between stages. Written in TypeScript with Commander.js, it uses `gh`, `linear-cli`, and `slack` as external dependencies.
+Hermes is a CLI that automates the development workflow between **Linear** and **GitHub**, eliminating manual tasks (~15–20 min per ticket) when transitioning between stages. Written in TypeScript with Commander.js, it uses `gh` and `linear-cli` as external dependencies.
 
 **Stack:** Node.js, TypeScript, Commander.js, execa, chalk, ora, clipboardy.
 

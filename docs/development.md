@@ -23,7 +23,7 @@ Shows full stack trace on unexpected errors.
 
 1. **Errors:** Use `HermesError(message, hint?)` for expected errors; `hint` appears in gray.
 2. **Spinner:** Use `withSpinner("Label...", async () => ...)` for async operations.
-3. **Prerequisites:** Call `checkPrerequisites(["gh", "linear", "slack"])` at command start when needed.
+3. **Prerequisites:** Call `checkPrerequisites(["gh", "linear"])` at command start when needed.
 4. **Output:** Use `chalk` for colors; success messages in green, details in gray.
 
 ## Adding or changing commands

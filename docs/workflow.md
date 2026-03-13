@@ -12,7 +12,7 @@
 
 4. **`hermes prc`** — Creates PR(s) to stg/main/both with title `[TICKET-ID] Title` (ticket from branch name).
 
-5. **`hermes review`** — Sends message on Slack (#pr) and moves ticket to "Ready for QA".
+5. **`hermes review`** — Moves ticket to "Ready for QA".
 
 6. **`hermes cleanup`** — Triggers Cleanup Stale FE Namespaces (delete ephemeral namespace). Uses current branch by default; `-b` to specify branch.
 

@@ -6,13 +6,12 @@
 
 | File | Description |
 |------|-------------|
-| `defaults.ts` | Constants (Linear statuses, workflows, Slack channel) |
+| `defaults.ts` | Constants (Linear statuses, workflows) |
 | `errors.ts` | `HermesError(message, hint?)` |
 | `git.ts` | `getCurrentBranch()`, `branchExists(branch)` |
 | `github.ts` | `triggerWorkflow`, `waitForRun`, `createPr`, `copyToClipboard`, `getCurrentPrUrl` |
 | `linear.ts` | `fetchIssue`, `updateIssueStatus`, `extractIssueIdFromBranch`, `getIssueFromBranch` |
-| `slack.ts` | `sendMessage(channel, text)` |
-| `prerequisites.ts` | `checkPrerequisites(["gh", "linear", "slack"])` |
+| `prerequisites.ts` | `checkPrerequisites(["gh", "linear"])` |
 | `preview-url.ts` | `sanitizeBranchLikeWorkflow`, `getPreviewUrl` (ephemeral URL; strips -stg) |
 | `spinner.ts` | `withSpinner(text, fn)` |
 
@@ -34,4 +33,3 @@
 
 - **gh** — GitHub CLI
 - **@schpet/linear-cli** — Linear CLI (`npx`; `linear auth` required)
-- **slack** — Slack CLI (optional, for `hermes review`)

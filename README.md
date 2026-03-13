@@ -1,6 +1,6 @@
 # Hermes CLI
 
-CLI to automate the development workflow between Linear, GitHub, and Slack, eliminating manual administrative overhead (~15-20min per ticket) when transitioning between stages.
+CLI to automate the development workflow between Linear and GitHub, eliminating manual administrative overhead (~15-20min per ticket) when transitioning between stages.
 
 ## Installation
 
@@ -25,8 +25,6 @@ npm run build && npm link
   ```
 
   Run `linear auth` first — hermes uses the Linear CLI's stored credentials.
-
-- **Slack CLI** (optional, for `hermes review`): [https://api.slack.com/automation/cli](https://api.slack.com/automation/cli)
 
 - **Claude API key** (optional, for `hermes test` summary): `hermes config set claude-api-key <key>`. Without it, `hermes test` skips AI summary generation and Linear ticket update. Use `--skip-summary` to skip these steps explicitly.
 
@@ -97,17 +95,16 @@ For `-t stg`: uses the branch with `-stg` suffix (e.g. `feat/ENG-123-stg`). If i
 hermes review
 ```
 
-- Sends a message on Slack with PR link and preview
 - Moves ticket to "Ready for QA"
 
-### 5b. Move ticket to Ready for QA (without Slack)
+### 5b. Move ticket to Ready for QA
 
 ```bash
 hermes ready
 ```
 
 - Moves ticket from "DEV Testing" to "Ready for QA"
-- Use when you've finished testing and want to hand off to QA without sending a Slack message
+- Use when you've finished testing and want to hand off to QA
 
 ### 6. Tear down ephemeral environment
 

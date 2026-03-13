@@ -14,7 +14,7 @@
 | `preview-url` | preview-url.ts | — | No | Ephemeral preview URL + copy to clipboard (-stg stripped) |
 | `clear-cache` | clear-cache.ts | — | No | Remove summary cache (branch or --all) |
 | `prc` | pr-create.ts | gh, linear | No | Creates PR(s) (ticket from branch) |
-| `review` | review.ts | linear, slack | No | Slack + status Ready for QA (ticket/PR from branch) |
+| `review` | review.ts | linear | No | Status Ready for QA (ticket/PR from branch) |
 | `ready` | ready.ts | linear | No | Status DEV Testing → Ready for QA (ticket from branch or -b) |
 | `task status` | task-status.ts | linear | No | Show task ID, title, URL, status (branch or -b) |
 | `task move` | task-move.ts | linear | No | Change task status via list (branch or -b) |
@@ -81,7 +81,6 @@
 
 - `hermes review`
 - Requires a PR for current branch (run `hermes prc` first). Gets ticket from branch, PR URL via `gh pr view`.
-- Sends message on Slack #pr
 - Moves ticket to "Ready for QA"
 
 ### ready
@@ -89,7 +88,7 @@
 - `hermes ready [-b branch]`
 - Moves ticket from "DEV Testing" to "Ready for QA"
 - Without `-b`: derives ticket from current branch. With `-b`: derives ticket from given branch (e.g. `feat/ENG-4321`, `ENG-4321-stg`, `ENG-4321`).
-- No Slack message; use when handing off to QA without review request
+- Use when you want to hand off to QA (e.g. without running `hermes review` first)
 
 ### task status
 

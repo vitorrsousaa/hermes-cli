@@ -18,7 +18,6 @@
 | Linear | statusInReview | "Ready for QA" |
 | GitHub | deployFeatureWorkflowId | "172365310" |
 | GitHub | cleanupWorkflow | "delete-dynamic-env.yaml" (Cleanup Stale FE Namespaces) |
-| Slack | channel | "#pr" |
 | claudeCode | command | "claude run test-info" |
 
 ## GitHub integration
@@ -32,8 +31,3 @@
 - Uses `@schpet/linear-cli` via `npx`
 - Credentials in `~` (homedir)
 - **`linear auth`** must be run before using commands that depend on Linear
-
-## Slack integration
-
-- Uses `slack` CLI to send messages
-- Default channel: `#pr`
