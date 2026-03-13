@@ -31,3 +31,13 @@ export async function pushBranch(branch: string, remote = "origin"): Promise<voi
   await execa("git", ["push", "-u", remote, branch]);
 }
 
+/** Switches to an existing branch. */
+export async function checkoutBranch(branch: string): Promise<void> {
+  await execa("git", ["checkout", branch]);
+}
+
+/** Creates a new branch and switches to it. */
+export async function createAndCheckoutBranch(branch: string): Promise<void> {
+  await execa("git", ["checkout", "-b", branch]);
+}
+

@@ -23,6 +23,7 @@
 | `sync` | sync.ts | — | No | Sync main → -stg |
 | `update` | update.ts | — | No | Merge main/staging into branch |
 | `push` | push.ts | — | No | Push current branch |
+| `co` | checkout.ts | — | No | Checkout branch (like git checkout; -b to create) |
 | `check` | check.ts | — | No | Typecheck, lint, prettier |
 | `summary` | summary.ts | claude-api-key | Optional | AI task summary from diffs |
 
@@ -128,6 +129,11 @@
 
 - `hermes push`
 - Pushes current branch to origin
+
+### co (checkout)
+
+- `hermes co <branch>` — Switch to existing branch (like `git checkout <branch>`). Works from any branch.
+- `hermes co -b <branch>` — Checkout main, pull origin main (ff-only), then create and switch to new branch. Ensures new branch is always from up-to-date main.
 
 ### check
 

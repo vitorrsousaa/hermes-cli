@@ -25,6 +25,7 @@ import { clearCacheCommand } from "./commands/clear-cache.js";
 import { previewUrlCommand } from "./commands/preview-url.js";
 import { taskStatusCommand } from "./commands/task-status.js";
 import { taskMoveCommand } from "./commands/task-move.js";
+import { checkoutCommand } from "./commands/checkout.js";
 
 const program = new Command();
 
@@ -213,6 +214,14 @@ program
   .description("Checkout main and pull origin main (fast-forward only)")
   .action(async () => {
     await mainCommand();
+  });
+
+program
+  .command("co <branch>")
+  .description("Checkout branch (like git checkout); use -b to create a new branch")
+  .option("-b, --create", "Create a new branch")
+  .action(async (branch: string, options: { create?: boolean }) => {
+    await checkoutCommand(branch, { create: options.create });
   });
 
 program
