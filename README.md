@@ -26,7 +26,12 @@ npm run build && npm link
 
   Run `linear auth` first — hermes uses the Linear CLI's stored credentials.
 
-- **Claude API key** (optional, for `hermes test` summary): `hermes config set claude-api-key <key>`. Without it, `hermes test` skips AI summary generation and Linear ticket update. Use `-ss` or `--skip-summary` to skip these steps explicitly.
+- **Claude API key** (optional, for `hermes test` summary): configure via `hermes config` (guided, interactive) or directly with `hermes config set claude-api-key <key>`. The key is stored locally in `~/.hermes-config.json`. Without it, `hermes test` skips AI summary generation and Linear ticket update. Use `-ss` or `--skip-summary` to skip these steps explicitly.
+
+### Configuração (`hermes config`)
+
+- **Interactive configuration**: Run `hermes config` to configure Hermes settings via prompts (currently the Claude API key).
+- **Set directly**: Use `hermes config set claude-api-key <key>` to set the key without prompts.
 
 ## Full Workflow
 
@@ -69,7 +74,7 @@ hermes test -c feat/xyz -t feat/abc  # Build core from feat/xyz, timesheets from
 - Uses **current branch** for React and for the Linear ticket (derived from branch name `feat/XXX` or `fix/XXX`).
 - Core/Timesheets: `main` by default; use `-c` / `-t` with optional branch to build them.
 - Triggers the deploy workflow, moves ticket to "DEV Testing", copies workflow URL.
-- **Optional summary**: If `claude-api-key` is set, generates AI task summary and updates Linear title. Use `-ss` or `--skip-summary` to skip.
+- **Optional summary**: If `claude-api-key` is set (via `hermes config` or `hermes config set claude-api-key <key>`), generates AI task summary and updates Linear title. If the API key is not configured, these summary steps are automatically skipped (equivalent to running with `--skip-summary`). Use `-ss` or `--skip-summary` to skip even when a key is configured.
 
 ### 4. Create pull request
 
