@@ -17,28 +17,28 @@ npm run build && npm link
 ## Prerequisites
 
 - **GitHub CLI** (`gh`): [https://cli.github.com/](https://cli.github.com/)
-- **Linear CLI** (`@schpet/linear-cli`): required for `hermes start`, `hermes prc`, etc.
+- **Linear CLI** (`@schpet/linear-cli`): required for `cw start`, `cw prc`, etc.
 
   ```bash
   npm install -g @schpet/linear-cli
   linear auth
   ```
 
-  Run `linear auth` first — hermes uses the Linear CLI's stored credentials.
+  Run `linear auth` first — cw uses the Linear CLI's stored credentials.
 
-- **Claude API key** (optional, for `hermes test` summary): configure via `hermes config` (guided, interactive) or directly with `hermes config set claude-api-key <key>`. The key is stored locally in `~/.hermes-config.json`. Without it, `hermes test` skips AI summary generation and Linear ticket update. Use `-ss` or `--skip-summary` to skip these steps explicitly.
+- **Claude API key** (optional, for `cw test` summary): configure via `cw config` (guided, interactive) or directly with `cw config set claude-api-key <key>`. The key is stored locally in `~/.hermes-config.json`. Without it, `cw test` skips AI summary generation and Linear ticket update. Use `-ss` or `--skip-summary` to skip these steps explicitly.
 
-### Configuração (`hermes config`)
+### Configuração (`cw config`)
 
-- **Interactive configuration**: Run `hermes config` to configure Hermes settings via prompts (currently the Claude API key).
-- **Set directly**: Use `hermes config set claude-api-key <key>` to set the key without prompts.
+- **Interactive configuration**: Run `cw config` to configure Hermes settings via prompts (currently the Claude API key).
+- **Set directly**: Use `cw config set claude-api-key <key>` to set the key without prompts.
 
 ## Full Workflow
 
 ### 1. Start working on a ticket
 
 ```bash
-hermes start <ticket-id>
+cw start <ticket-id>
 ```
 
 - Fetches the ticket from Linear
@@ -48,12 +48,12 @@ hermes start <ticket-id>
 ### 2. Deploy ephemeral environment
 
 ```bash
-hermes deployfe
-hermes deployfe -sc                  # same branch for cw-core as cw-react (--same-core)
-hermes deployfe -c                   # also build cw-core (branch: main)
-hermes deployfe -c feat/xyz          # build cw-core from feat/xyz
-hermes deployfe -t                   # also build cw-ms-timesheets (branch: main)
-hermes deployfe --no-socketio        # disable Socket.IO (enabled by default)
+cw deployfe
+cw deployfe -sc                  # same branch for cw-core as cw-react (--same-core)
+cw deployfe -c                   # also build cw-core (branch: main)
+cw deployfe -c feat/xyz          # build cw-core from feat/xyz
+cw deployfe -t                   # also build cw-ms-timesheets (branch: main)
+cw deployfe --no-socketio        # disable Socket.IO (enabled by default)
 ```
 
 - Triggers the "Deploy Feature Environment" workflow
@@ -64,26 +64,26 @@ hermes deployfe --no-socketio        # disable Socket.IO (enabled by default)
 ### 3. Deploy ephemeral environment and move ticket to DEV Testing
 
 ```bash
-hermes test
-hermes test -ss                       # Skip AI summary and Linear ticket update (-ss / --skip-summary)
-hermes test -sd                      # Skip ephemeral environment; only move ticket + optional summary (--skip-deploy)
-hermes test -c                       # Also build cw-core (branch: main)
-hermes test -c feat/xyz -t feat/abc  # Build core from feat/xyz, timesheets from feat/abc
+cw test
+cw test -ss                       # Skip AI summary and Linear ticket update (-ss / --skip-summary)
+cw test -sd                      # Skip ephemeral environment; only move ticket + optional summary (--skip-deploy)
+cw test -c                       # Also build cw-core (branch: main)
+cw test -c feat/xyz -t feat/abc  # Build core from feat/xyz, timesheets from feat/abc
 ```
 
 - Uses **current branch** for React and for the Linear ticket (derived from branch name `feat/XXX` or `fix/XXX`).
 - Core/Timesheets: `main` by default; use `-c` / `-t` with optional branch to build them.
 - Triggers the deploy workflow, moves ticket to "DEV Testing", copies workflow URL.
-- **Optional summary**: If `claude-api-key` is set (via `hermes config` or `hermes config set claude-api-key <key>`), generates AI task summary and updates Linear title. If the API key is not configured, these summary steps are automatically skipped (equivalent to running with `--skip-summary`). Use `-ss` or `--skip-summary` to skip even when a key is configured.
+- **Optional summary**: If `claude-api-key` is set (via `cw config` or `cw config set claude-api-key <key>`), generates AI task summary and updates Linear title. If the API key is not configured, these summary steps are automatically skipped (equivalent to running with `--skip-summary`). Use `-ss` or `--skip-summary` to skip even when a key is configured.
 
 ### 4. Create pull request
 
 ```bash
-hermes prc
-hermes prc -t main
-hermes prc -t both
-hermes prc -d
-hermes prc -t main -d
+cw prc
+cw prc -t main
+cw prc -t both
+cw prc -d
+cw prc -t main -d
 ```
 
 Creates PR(s) with title `[TICKET-ID] Title` and pre-filled template. Uses ticket info from the current branch name (e.g. `feat/ENG-123`). Copies URL to clipboard.
@@ -98,7 +98,7 @@ For `-t stg`: uses the branch with `-stg` suffix (e.g. `feat/ENG-123-stg`). If i
 ### 5. Request review
 
 ```bash
-hermes review
+cw review
 ```
 
 - Moves ticket to "Ready for QA"
@@ -106,7 +106,7 @@ hermes review
 ### 5b. Move ticket to Ready for QA
 
 ```bash
-hermes ready
+cw ready
 ```
 
 - Moves ticket from "DEV Testing" to "Ready for QA"
@@ -115,8 +115,8 @@ hermes ready
 ### 6. Tear down ephemeral environment
 
 ```bash
-hermes cleanup              # Clean up namespace for current branch
-hermes cleanup -b feat/xyz  # Clean up namespace for specific branch
+cw cleanup              # Clean up namespace for current branch
+cw cleanup -b feat/xyz  # Clean up namespace for specific branch
 ```
 
 - Uses **current branch** by default; `-b` to specify another. Triggers Cleanup Stale FE Namespaces workflow.
@@ -124,9 +124,9 @@ hermes cleanup -b feat/xyz  # Clean up namespace for specific branch
 ### 7. Clear summary cache
 
 ```bash
-hermes clear-cache          # Clear cache for current branch
-hermes clear-cache -b feat/xyz
-hermes clear-cache --all    # Clear all hermes summary caches
+cw clear-cache          # Clear cache for current branch
+cw clear-cache -b feat/xyz
+cw clear-cache --all    # Clear all cw summary caches
 ```
 
 ## Utilities
@@ -134,10 +134,10 @@ hermes clear-cache --all    # Clear all hermes summary caches
 ### Get current branch name
 
 ```bash
-hermes branch          # prints + copies to clipboard: feat/ENG-4135
-hermes branch --stg    # prints + copies: feat/ENG-4135-stg
-hermes branch --no-copy # prints only (no copy)
-hermes branch -s       # shorthand: staging suffix + copy
+cw branch          # prints + copies to clipboard: feat/ENG-4135
+cw branch --stg    # prints + copies: feat/ENG-4135-stg
+cw branch --no-copy # prints only (no copy)
+cw branch -s       # shorthand: staging suffix + copy
 ```
 
 | Flag | Short | Description |
@@ -150,7 +150,7 @@ Useful as a shortcut instead of terminal aliases or scripts.
 ### Toggle between main and staging branch
 
 ```bash
-hermes toggle
+cw toggle
 ```
 
 Switches between the main branch and its staging counterpart (`-stg` suffix):
@@ -165,13 +165,13 @@ Switches between the main branch and its staging counterpart (`-stg` suffix):
 Example with custom suffix:
 
 ```bash
-hermes toggle --suffix -staging
+cw toggle --suffix -staging
 ```
 
 ### Push current branch
 
 ```bash
-hermes push
+cw push
 ```
 
 Pushes the current branch to origin. No need to type the branch name.
@@ -179,9 +179,9 @@ Pushes the current branch to origin. No need to type the branch name.
 ### Update branch with main or staging
 
 ```bash
-hermes update
-hermes update -t main
-hermes update -t stg
+cw update
+cw update -t main
+cw update -t stg
 ```
 
 Merges `origin/main` or `origin/staging` into the current branch.
@@ -193,7 +193,7 @@ Merges `origin/main` or `origin/staging` into the current branch.
 ### Sync branch to staging
 
 ```bash
-hermes sync
+cw sync
 ```
 
 Run from your main branch (e.g. `fix/9082`) or from the `-stg` branch. Syncs all changes to the `-stg` counterpart:
@@ -227,5 +227,5 @@ npm run dev   # watch mode
 To see stack traces on unexpected errors:
 
 ```bash
-HERMES_DEBUG=1 hermes <command>
+HERMES_DEBUG=1 cw <command>
 ```

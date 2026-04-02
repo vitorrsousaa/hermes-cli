@@ -15,7 +15,7 @@ export async function reviewCommand(): Promise<void> {
   if (!ticketId) {
     throw new HermesError(
       "Could not extract ticket ID from current branch.",
-      "Use a branch like feat/ENG-4321 or fix/ENG-4321, or run hermes prc from that branch first."
+      "Use a branch like feat/ENG-4321 or fix/ENG-4321, or run cw prc from that branch first."
     );
   }
   const issue = await withSpinner("Fetching ticket...", () => fetchIssue(ticketId));
@@ -23,7 +23,7 @@ export async function reviewCommand(): Promise<void> {
   if (!prUrl) {
     throw new HermesError(
       "No PR found for current branch.",
-      "Run hermes prc first."
+      "Run cw prc first."
     );
   }
 

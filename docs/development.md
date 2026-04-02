@@ -14,7 +14,7 @@ npm link           # global link for testing
 ## Debug
 
 ```bash
-HERMES_DEBUG=1 hermes <command>
+HERMES_DEBUG=1 cw <command>
 ```
 
 Shows full stack trace on unexpected errors.

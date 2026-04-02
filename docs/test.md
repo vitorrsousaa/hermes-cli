@@ -5,7 +5,7 @@
 ## Synopsis
 
 ```bash
-hermes test [-f|--force] [-ss|--skip-summary] [-sd|--skip-deploy]
+cw test [-f|--force] [-ss|--skip-summary] [-sd|--skip-deploy]
 ```
 
 ## Description
@@ -30,11 +30,11 @@ If `claude-api-key` is configured, also generates an AI-powered task summary fro
 
 - `gh` (GitHub CLI)
 - `linear` (Linear CLI)
-- Active context (run `hermes start <ticket-id>` first)
+- Active context (run `cw start <ticket-id>` first)
 
 ## Task summary (optional)
 
-When `claude-api-key` is set via `hermes config set claude-api-key <key>` (and `-ss`/`--skip-summary` is not used):
+When `claude-api-key` is set via `cw config set claude-api-key <key>` (and `-ss`/`--skip-summary` is not used):
 
 1. **Cache check** — If a cached summary exists for the current branch and `--force` is not used, loads from cache.
 2. **Generate** — Otherwise collects diffs from all repos, calls Claude API, and caches the result at `/tmp/hermes-summary-{branch}.txt`.
@@ -56,5 +56,5 @@ With `HERMES_DEBUG=1`, additional debug output is printed to stderr:
 - Any summary-related errors
 
 ```bash
-HERMES_DEBUG=1 hermes test
+HERMES_DEBUG=1 cw test
 ```

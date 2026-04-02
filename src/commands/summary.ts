@@ -40,7 +40,7 @@ export async function summaryCommand(options: { force?: boolean } = {}): Promise
   if (!apiKey) {
     throw new HermesError(
       "Claude API key not configured.",
-      "Run: hermes config set claude-api-key <your-key>"
+      "Run: cw config set claude-api-key <your-key>"
     );
   }
 

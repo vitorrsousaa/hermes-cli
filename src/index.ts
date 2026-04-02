@@ -30,7 +30,7 @@ import { checkoutCommand } from "./commands/checkout.js";
 const program = new Command();
 
 program
-  .name("hermes")
+  .name("cw")
   .description("CLI to automate the development workflow between Linear, GitHub, and Slack")
   .version("0.1.0");
 
@@ -108,9 +108,9 @@ program
 
 program
   .command("clear-cache")
-  .description("Remove hermes summary cache for current branch or all")
+  .description("Remove summary cache for current branch or all")
   .option("-b, --branch <name>", "Branch to clear cache for (default: current branch)")
-  .option("--all", "Clear all hermes summary caches")
+  .option("--all", "Clear all summary caches")
   .action(async (options: { branch?: string; all?: boolean }) => {
     await clearCacheCommand({ branch: options.branch, all: options.all });
   });
@@ -172,7 +172,7 @@ program
   .description("Print current branch name (copies to clipboard by default)")
   .option("-s, --stg", "Append -stg suffix to branch name")
   .option("--no-copy", "Do not copy to clipboard")
-  .addHelpText("after", "\nShorthand:\n  hermes branch -s    staging suffix + copy to clipboard")
+  .addHelpText("after", "\nShorthand:\n  cw branch -s    staging suffix + copy to clipboard")
   .action(async (options: { stg?: boolean; copy?: boolean }) => {
     await branchCommand(options);
   });
