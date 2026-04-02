@@ -5,6 +5,15 @@ export async function getCurrentBranch(): Promise<string> {
   return stdout.trim();
 }
 
+const STG_BRANCH_SUFFIX = "-stg";
+
+/** Strips trailing `-stg` so deploy/ephemeral uses the base feature branch (same convention as preview URL). */
+export function stripStgBranchSuffix(branch: string): string {
+  return branch.endsWith(STG_BRANCH_SUFFIX)
+    ? branch.slice(0, -STG_BRANCH_SUFFIX.length)
+    : branch;
+}
+
 export async function branchExists(branch: string): Promise<boolean> {
   const result = await execa("git", ["rev-parse", "--verify", branch], {
     reject: false,

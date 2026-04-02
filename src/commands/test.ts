@@ -2,7 +2,7 @@ import chalk from "chalk";
 import { readFile, writeFile } from "fs/promises";
 import { DEFAULTS } from "../lib/defaults.js";
 import { copyToClipboard } from "../lib/github.js";
-import { getCurrentBranch } from "../lib/git.js";
+import { getCurrentBranch, stripStgBranchSuffix } from "../lib/git.js";
 import { updateIssueStatus, updateIssueTitle, extractIssueIdFromBranch, fetchIssue } from "../lib/linear.js";
 import { checkPrerequisites } from "../lib/prerequisites.js";
 import { withSpinner } from "../lib/spinner.js";
@@ -73,11 +73,23 @@ export async function testCommand(options: TestOptions = {}): Promise<void> {
   await checkPrerequisites(["gh", "linear"]);
 
   const branch = await getCurrentBranch();
+  const branchForEphemeral = stripStgBranchSuffix(branch);
   const ticketId = extractIssueIdFromBranch(branch);
   const { build: buildCore, branch: branchCore } = resolveCore(options);
   const { build: buildTimesheets, branch: branchTimesheets } = resolveTimesheets(options);
 
-  debug("branch:", branch, "ticketId:", ticketId, "core:", branchCore, "timesheets:", branchTimesheets);
+  debug(
+    "branch:",
+    branch,
+    "branchForEphemeral:",
+    branchForEphemeral,
+    "ticketId:",
+    ticketId,
+    "core:",
+    branchCore,
+    "timesheets:",
+    branchTimesheets
+  );
 
   let runUrl: string | undefined;
   if (!options.skipDeploy) {
@@ -85,7 +97,7 @@ export async function testCommand(options: TestOptions = {}): Promise<void> {
       "Triggering ephemeral environment...",
       () =>
         triggerDeployFeatureWorkflow({
-          branchReact: branch,
+          branchReact: branchForEphemeral,
           buildCore,
           branchCore,
           buildTimesheets,
