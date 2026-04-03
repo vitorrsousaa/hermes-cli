@@ -80,7 +80,7 @@ cw prc -d
 cw prc -t main -d
 ```
 
-Creates PR(s) with title `[TICKET-ID] Title` and pre-filled template. Uses ticket info from the current branch name (e.g. `feat/ENG-123`). Copies URL to clipboard.
+Creates PR(s) with title `[TICKET-ID] Title` and pre-filled template. Uses ticket info from the current branch name (e.g. `feat/ENG-123`). Copies URL to clipboard. **Assignee:** each PR is assigned to you (the authenticated `gh` user) via `--assignee @me` — you do not need to pass anything extra.
 
 For `-t stg`: uses the branch with `-stg` suffix (e.g. `feat/ENG-123-stg`). If it doesn't exist, creates it from the current branch and pushes before opening the PR.
 

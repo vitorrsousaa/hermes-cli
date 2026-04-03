@@ -24,7 +24,7 @@
 
 - **Deploy:** `gh workflow run <workflowId>` with inputs: `branch`, `build_core`, `core_branch`, `build_timesheets`, `timesheets_branch`, `enabled_socketio`
 - Workflow runs from `ref: main`
-- **PR:** `gh pr create` with title and body
+- **PR:** `gh pr create` with title, body, and `--assignee @me` (Hermes `cw prc` always assigns the PR to the CLI user)
 
 ## Linear integration
 

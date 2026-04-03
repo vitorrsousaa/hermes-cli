@@ -18,7 +18,7 @@
 ## github.ts — Details
 
 - **triggerWorkflow(workflow, inputs?, options?):** Triggers via `gh workflow run`; uses `ref: main` (or inputs.branch). Returns `{ runId, url }`.
-- **createPr(options):** `gh pr create`; returns `{ url, number }`.
+- **createPr(options):** `gh pr create`; optional `assignee` (e.g. `@me`); returns `{ url, number }`.
 - **getCurrentPrUrl():** `gh pr view --json url`; returns PR URL for current branch or null.
 - **copyToClipboard(text):** Best-effort; fails silently in headless/SSH.
 

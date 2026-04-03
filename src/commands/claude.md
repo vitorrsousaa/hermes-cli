@@ -11,7 +11,7 @@
 | `test` | test.ts | gh, linear | No | Deploy + status DEV Testing (uses current branch) |
 | `cleanup` | cleanup.ts | gh | No | Cleanup Stale FE Namespaces (current branch or -b) |
 | `preview-url` | preview-url.ts | — | No | Ephemeral preview URL + copy to clipboard (-stg stripped) |
-| `prc` | pr-create.ts | gh, linear | No | Creates PR(s) (ticket from branch) |
+| `prc` | pr-create.ts | gh, linear | No | Creates PR(s) (ticket from branch); assigns PR to you (`--assignee @me`) |
 | `review` | review.ts | linear | No | Status Ready for QA (ticket/PR from branch) |
 | `ready` | ready.ts | linear | No | Status DEV Testing → Ready for QA (ticket from branch or -b) |
 | `task status` | task-status.ts | linear | No | Show task ID, title, URL, status (branch or -b) |
@@ -69,6 +69,7 @@
 - `-t both`: two PRs
 - `-d`: draft PR
 - Title: `[TICKET-ID] Title`
+- PR is always assigned to the authenticated GitHub user (`gh pr create --assignee @me`)
 
 ### review
 

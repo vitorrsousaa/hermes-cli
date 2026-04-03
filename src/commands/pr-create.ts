@@ -133,6 +133,7 @@ export async function prCreateCommand(options: {
           body,
           base,
           draft,
+          assignee: "@me",
         });
         urls.push(url);
       }

@@ -123,6 +123,8 @@ export async function createPr(options: {
   body: string;
   base?: string;
   draft?: boolean;
+  /** GitHub login or `@me` for the authenticated user. */
+  assignee?: string;
 }): Promise<{ url: string; number: number }> {
   const args = [
     "pr",
@@ -137,6 +139,9 @@ export async function createPr(options: {
   }
   if (options.draft) {
     args.push("--draft");
+  }
+  if (options.assignee) {
+    args.push("--assignee", options.assignee);
   }
   const { stdout } = await execa("gh", args);
 
