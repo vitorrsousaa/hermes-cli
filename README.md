@@ -25,14 +25,8 @@ npm run build && npm link
   ```
 
   Run `linear auth` first — cw uses the Linear CLI's stored credentials.
-
-- **Claude API key** (optional, for `cw test` summary): configure via `cw config` (guided, interactive) or directly with `cw config set claude-api-key <key>`. The key is stored locally in `~/.hermes-config.json`. Without it, `cw test` skips AI summary generation and Linear ticket update. Use `-ss` or `--skip-summary` to skip these steps explicitly.
-
-### Configuração (`cw config`)
-
-- **Interactive configuration**: Run `cw config` to configure Hermes settings via prompts (currently the Claude API key).
-- **Set directly**: Use `cw config set claude-api-key <key>` to set the key without prompts.
-
+  
+  
 ## Full Workflow
 
 ### 1. Start working on a ticket
