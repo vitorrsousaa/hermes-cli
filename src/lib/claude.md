@@ -10,7 +10,7 @@
 | `errors.ts` | `HermesError(message, hint?)` |
 | `git.ts` | `getCurrentBranch()`, `branchExists(branch)` |
 | `github.ts` | `triggerWorkflow`, `waitForRun`, `createPr`, `copyToClipboard`, `getCurrentPrUrl` |
-| `linear.ts` | `fetchIssue`, `updateIssueStatus`, `extractIssueIdFromBranch`, `getIssueFromBranch` |
+| `linear.ts` | `fetchIssue`, `updateIssueStatus`, `commentOnIssue`, `extractIssueIdFromBranch`, `getIssueFromBranch` |
 | `prerequisites.ts` | `checkPrerequisites(["gh", "linear"])` |
 | `preview-url.ts` | `sanitizeBranchLikeWorkflow`, `getPreviewUrl` (ephemeral URL; strips -stg) |
 | `spinner.ts` | `withSpinner(text, fn)` |
@@ -28,6 +28,7 @@
 - **extractIssueIdFromBranch(branch):** `feat/ENG-123` → `ENG-123`; `fix/9082-stg` → `9082`
 - **getTicketIdFromBranch(branch):** Resolves ticket ID from branch (feat/ENG-4321, ENG-4321-stg, ENG-4321); for use in ready/status
 - **getIssueFromBranch():** Fetches ticket via current branch; returns `null` if no match
+- **commentOnIssue(issueId, body):** Posts a comment on the issue via `linear issue comment add`
 
 ## External dependencies
 

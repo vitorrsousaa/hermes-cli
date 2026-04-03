@@ -6,13 +6,11 @@
 
 | Command | File | Prereq | Context | Description |
 |---------|------|--------|---------|-------------|
-| `config` | config.ts | — | No | Configure Hermes keys (interactive) |
 | `start` | start.ts | gh, linear | No | Creates branch |
 | `deployfe` | deploy.ts | gh | No | Triggers deploy workflow |
 | `test` | test.ts | gh, linear | No | Deploy + status DEV Testing (uses current branch) |
 | `cleanup` | cleanup.ts | gh | No | Cleanup Stale FE Namespaces (current branch or -b) |
 | `preview-url` | preview-url.ts | — | No | Ephemeral preview URL + copy to clipboard (-stg stripped) |
-| `clear-cache` | clear-cache.ts | — | No | Remove summary cache (branch or --all) |
 | `prc` | pr-create.ts | gh, linear | No | Creates PR(s) (ticket from branch) |
 | `review` | review.ts | linear | No | Status Ready for QA (ticket/PR from branch) |
 | `ready` | ready.ts | linear | No | Status DEV Testing → Ready for QA (ticket from branch or -b) |
@@ -25,7 +23,7 @@
 | `push` | push.ts | — | No | Push current branch |
 | `co` | checkout.ts | — | No | Checkout branch (like git checkout; -b to create) |
 | `check` | check.ts | — | No | Typecheck, lint, prettier |
-| `summary` | summary.ts | claude-api-key | Optional | AI task summary from diffs |
+| `summary` | summary.ts | linear | No | Post @summarizer comment on Linear task |
 
 ## Per-command details
 
@@ -45,11 +43,10 @@
 
 ### test
 
-- `cw test [-f|--force] [-ss|--skip-summary] [-sd|--skip-deploy] [-c [branch]] [-t [branch]]`
+- `cw test [-sd|--skip-deploy] [-c [branch]] [-t [branch]]`
 - Uses **current branch** for deploy and for Linear ticket (extracted from branch name).
 - Core/timesheets: default `main`; `-c` / `-t` with optional branch to build.
 - Moves ticket to "DEV Testing" (skips if branch is not feat/XXX or fix/XXX).
-- Optionally generates AI task summary; `-f` regenerates even if cached.
 - See [../../docs/test.md](../../docs/test.md)
 
 ### cleanup
@@ -62,11 +59,6 @@
 - `cw preview-url [-b branch]`
 - Prints ephemeral app URL (`https://app-{sanitized}.preview.carewebs.com`) and copies to clipboard.
 - Uses same branch sanitization as deploy-feature-env workflow; if branch has `-stg`, URL uses name without `-stg`.
-
-### clear-cache
-
-- `cw clear-cache [-b branch] [--all]`
-- Removes summary cache for current branch (or `-b`), or `--all` for every branch.
 
 ### prc
 
@@ -142,7 +134,7 @@
 
 ### summary
 
-- `cw summary [-f|--force]`
-- Generates AI task summary from git diffs (requires `claude-api-key`)
-- `-f`: regenerate even if cached
+- `cw summary`
+- Posts `@summarizer` comment on the Linear task (ticket ID from current branch)
+- Requires branch to be `feat/ENG-XXXX` or `fix/ENG-XXXX`
 - See [../../docs/summary.md](../../docs/summary.md)

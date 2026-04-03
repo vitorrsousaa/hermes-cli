@@ -8,7 +8,7 @@
 
 2. **`cw deployfe`** — Triggers "Deploy Feature Environment" workflow. React branch: current branch (`-r` to override). `-c`/`-t` for cw-core / cw-ms-timesheets: optional branch argument; if omitted, `main`.
 
-3. **`cw test`** — Uses current branch; triggers deploy, moves ticket to "DEV Testing", copies workflow URL. Optional `-c`/`-t` for core/timesheets (default: main). Optionally generates AI task summary (see [test.md](test.md)).
+3. **`cw test`** — Uses current branch; triggers deploy, moves ticket to "DEV Testing", copies workflow URL. Optional `-c`/`-t` for core/timesheets (default: main).
 
 4. **`cw prc`** — Creates PR(s) to stg/main/both with title `[TICKET-ID] Title` (ticket from branch name).
 
@@ -18,7 +18,7 @@
 
 ## Utility commands (outside main flow)
 
-- **`cw summary`** — AI task summary from git diffs (see [summary.md](summary.md))
+- **`cw summary`** — Post `@summarizer` comment on the Linear task (see [summary.md](summary.md))
 - **`cw branch`** — Branch name + clipboard
 - **`cw toggle`** — Switch main ↔ -stg
 - **`cw sync`** — Sync main → -stg

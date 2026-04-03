@@ -15,13 +15,7 @@ import { pushCommand } from "./commands/push.js";
 import { mainCommand } from "./commands/main.js";
 import { deployCommand } from "./commands/deploy.js";
 import { readyCommand } from "./commands/ready.js";
-import {
-  configGetCommand,
-  configInteractiveCommand,
-  configSetCommand,
-} from "./commands/config.js";
 import { summaryCommand } from "./commands/summary.js";
-import { clearCacheCommand } from "./commands/clear-cache.js";
 import { previewUrlCommand } from "./commands/preview-url.js";
 import { taskStatusCommand } from "./commands/task-status.js";
 import { taskMoveCommand } from "./commands/task-move.js";
@@ -69,21 +63,15 @@ program
 program
   .command("test")
   .description("Move ticket to DEV Testing and deploy ephemeral environment (uses current branch)")
-  .option("-f, --force", "Regenerate task summary even if cached")
-  .option("-ss, --skip-summary", "Skip AI summary generation and Linear ticket update")
   .option("-sd, --skip-deploy", "Skip triggering ephemeral environment deploy")
   .option("-c, --core [branch]", "Build cw-core; optional branch (default: main)")
   .option("-t, --timesheets [branch]", "Build cw-ms-timesheets; optional branch (default: main)")
   .action(async (options: {
-    force?: boolean;
-    skipSummary?: boolean;
     skipDeploy?: boolean;
     core?: string | boolean;
     timesheets?: string | boolean;
   }) => {
     await testCommand({
-      force: options.force,
-      skipSummary: options.skipSummary,
       skipDeploy: options.skipDeploy,
       core: options.core === true ? true : options.core,
       timesheets: options.timesheets === true ? true : options.timesheets,
@@ -106,14 +94,6 @@ program
     await previewUrlCommand({ branch: options.branch });
   });
 
-program
-  .command("clear-cache")
-  .description("Remove summary cache for current branch or all")
-  .option("-b, --branch <name>", "Branch to clear cache for (default: current branch)")
-  .option("--all", "Clear all summary caches")
-  .action(async (options: { branch?: string; all?: boolean }) => {
-    await clearCacheCommand({ branch: options.branch, all: options.all });
-  });
 
 program
   .command("prc")
@@ -239,33 +219,11 @@ program
     });
   });
 
-const configCmd = program
-  .command("config")
-  .description("Manage Hermes configuration (interactive)")
-  .action(async () => {
-    await configInteractiveCommand();
-  });
-
-configCmd
-  .command("set <key> <value>")
-  .description("Set a configuration value")
-  .action(async (key: string, value: string) => {
-    await configSetCommand(key, value);
-  });
-
-configCmd
-  .command("get <key>")
-  .description("Get a configuration value")
-  .action(async (key: string) => {
-    await configGetCommand(key);
-  });
-
 program
   .command("summary")
-  .description("Generate AI-powered task summary from git diffs")
-  .option("-f, --force", "Regenerate even if cached")
-  .action(async (options: { force?: boolean }) => {
-    await summaryCommand(options);
+  .description("Post @summarizer comment on the Linear task")
+  .action(async () => {
+    await summaryCommand();
   });
 
 async function main(): Promise<void> {

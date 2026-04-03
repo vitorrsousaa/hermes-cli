@@ -214,6 +214,18 @@ export async function updateIssueDescription(
  * Matches the section from "DEVELOPER TESTS" until the next all-caps section header or end.
  * If the section is not found, appends it at the end.
  */
+export async function commentOnIssue(
+  issueId: string,
+  body: string,
+  env?: LinearEnv | null
+): Promise<void> {
+  try {
+    await runLinear(["issue", "comment", "add", issueId, "--body", body], env ?? undefined);
+  } catch {
+    throw new HermesError(`Failed to add comment to ticket ${issueId}.`);
+  }
+}
+
 export function replaceDevTestsSection(description: string, newTests: string[]): string {
   const newSection = `DEVELOPER TESTS\n${newTests.map((t) => `[ ] ${t}`).join("\n")}`;
 
