@@ -36,10 +36,11 @@
 
 - `cw deployfe [-r branch] [-c [branch]] [-sc|--same-core] [-t [branch]] [--no-socketio]`
 - `-r`: React branch (default: current)
-- `-c`: build cw-core (default: main)
-- `-sc, --same-core`: use same branch for cw-core as cw-react
-- `-t`: build cw-ms-timesheets (default: main)
-- `--no-socketio`: disable Socket.IO
+- **cw-core / cw-ms-timesheets:** sempre enviados para build; branch **`main`** para cada um se não especificares `-c` / `-t` (ou o nome de branch opcional a seguir a essas flags).
+- `-c [branch]`: branch do cw-core (omitir o valor ⇒ `main`)
+- `-sc, --same-core`: cw-core usa a mesma branch que o React (ignora o default `main` para o core)
+- `-t [branch]`: branch do cw-ms-timesheets (omitir o valor ⇒ `main`)
+- **Socket.IO:** ligado por defeito — não é preciso parâmetro para incluir o deploy; só `--no-socketio` para desligar
 
 ### test
 

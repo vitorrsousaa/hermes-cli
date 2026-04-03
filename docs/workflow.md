@@ -6,7 +6,7 @@
 
 1. **`cw start <ticket-id>`** — Fetches ticket from Linear, moves to "In Progress", creates branch `feat/<id>` or `fix/<id>`.
 
-2. **`cw deployfe`** — Triggers "Deploy Feature Environment" workflow. React branch: current branch (`-r` to override). `-c`/`-t` for cw-core / cw-ms-timesheets: optional branch argument; if omitted, `main`.
+2. **`cw deployfe`** — Triggers "Deploy Feature Environment" workflow. React branch: current branch (`-r` to override). **cw-core** and **cw-ms-timesheets** are always built; if you do not pass a branch with `-c` / `-t`, Hermes sends **`main`** for each. Use `-c <branch>` / `-t <branch>` to override; `--same-core` makes cw-core use the same branch as React. **Socket.IO** is enabled by default (no flag needed); use `--no-socketio` to disable.
 
 3. **`cw test`** — Uses current branch; triggers deploy, moves ticket to "DEV Testing", copies workflow URL. Optional `-c`/`-t` for core/timesheets (default: main).
 

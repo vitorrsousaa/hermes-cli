@@ -1,12 +1,12 @@
 import chalk from "chalk";
-import { checkPrerequisites } from "../lib/prerequisites.js";
+import { DEFAULTS } from "../lib/defaults.js";
 import { getCurrentBranch, pushBranch } from "../lib/git.js";
 import {
-  triggerWorkflow,
   copyToClipboard,
+  triggerWorkflow,
   type TriggerWorkflowResult,
 } from "../lib/github.js";
-import { DEFAULTS } from "../lib/defaults.js";
+import { checkPrerequisites } from "../lib/prerequisites.js";
 
 export interface DeployWorkflowInputs {
   branchReact: string;
@@ -50,7 +50,7 @@ export interface DeployOptions {
 
 function resolveCore(options: DeployOptions): { build: boolean; branch: string } {
   const c = options.core;
-  if (!c) return { build: false, branch: "main" };
+  if (!c) return { build: true, branch: "main" };
   if (c === true) return { build: true, branch: "main" };
   return { build: true, branch: c };
 }
@@ -59,7 +59,7 @@ function resolveTimesheets(
   options: DeployOptions
 ): { build: boolean; branch: string } {
   const t = options.timesheets;
-  if (!t) return { build: false, branch: "main" };
+  if (!t) return { build: true, branch: "main" };
   if (t === true) return { build: true, branch: "main" };
   return { build: true, branch: t };
 }

@@ -49,17 +49,17 @@ cw start <ticket-id>
 
 ```bash
 cw deployfe
-cw deployfe -sc                  # same branch for cw-core as cw-react (--same-core)
-cw deployfe -c                   # also build cw-core (branch: main)
-cw deployfe -c feat/xyz          # build cw-core from feat/xyz
-cw deployfe -t                   # also build cw-ms-timesheets (branch: main)
-cw deployfe --no-socketio        # disable Socket.IO (enabled by default)
+cw deployfe -r feat/ENG-1234     # React branch (default: current branch)
+cw deployfe -c feat/xyz            # cw-core from feat/xyz (default branch: main)
+cw deployfe -t feat/abc          # cw-ms-timesheets from feat/abc (default branch: main)
+cw deployfe -sc                  # cw-core uses same branch as cw-react (--same-core)
+cw deployfe --no-socketio        # disable Socket.IO deploy (enabled by default)
 ```
 
-- Triggers the "Deploy Feature Environment" workflow
-- React branch: current branch (or `-r <branch>`)
-- Core/Timesheets: `main` by default when `-c`/`-t` are used
-- Socket.IO: enabled by default
+- Triggers the "Deploy Feature Environment" workflow.
+- **React:** branch atual ou `-r <branch>`.
+- **cw-core e cw-ms-timesheets:** o workflow **sempre** inclui build dos dois. Se não passares branch em `-c` ou `-t`, o Hermes envia **`main`** como branch de cada serviço. Usa `-c <branch>` / `-t <branch>` para outra branch; usa `--same-core` (`-sc`) para o core usar a **mesma** branch que o React (em vez de `main`).
+- **Socket.IO (cw-socketio):** por defeito **ligado** — não precisas de passar nenhum parâmetro para incluir o deploy do Socket.IO. Só usa **`--no-socketio`** quando quiseres **desligar**.
 
 ### 3. Deploy ephemeral environment and move ticket to DEV Testing
 
