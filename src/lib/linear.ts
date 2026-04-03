@@ -1,10 +1,10 @@
+import { execa } from "execa";
+import { unlink, writeFile } from "fs/promises";
 import { homedir, tmpdir } from "os";
 import { join } from "path";
-import { writeFile, unlink } from "fs/promises";
-import { execa } from "execa";
+import { LINEAR_WORKFLOW_STATUSES } from "./defaults.js";
 import { HermesError } from "./errors.js";
 import { getCurrentBranch } from "./git.js";
-import { LINEAR_WORKFLOW_STATUSES } from "./defaults.js";
 
 export interface LinearEnv {
   apiKey: string;
@@ -31,6 +31,34 @@ export interface LinearIssue {
   url: string;
   status: string;
   description: string;
+}
+
+/** GraphQL-shaped payload from `linear issue view --json`. */
+interface LinearIssueJson {
+  identifier?: string;
+  title?: string;
+  url?: string;
+  description?: string | null;
+  state?: { name?: string } | null;
+}
+
+function parseIssueFromJson(output: string, fallbackIssueId: string): LinearIssue {
+  const data = JSON.parse(output) as LinearIssueJson;
+  const identifier = (data.identifier ?? fallbackIssueId).trim();
+  const titlePart = data.title?.trim() ?? "";
+  const title =
+    titlePart && identifier ? `${identifier}: ${titlePart}` : titlePart || identifier;
+  const url = data.url?.trim() || `https://linear.app/issue/${identifier}`;
+  const status = data.state?.name?.trim() ?? "";
+  const description = data.description?.trim() ?? "";
+
+  return {
+    id: identifier,
+    title,
+    url,
+    status,
+    description,
+  };
 }
 
 /**
@@ -96,8 +124,15 @@ export async function fetchIssue(
   env?: LinearEnv | null
 ): Promise<LinearIssue> {
   try {
-    const { stdout } = await runLinear(["issue", "view", issueId], env ?? undefined);
-    return parseIssueOutput(issueId, stdout);
+    const { stdout } = await runLinear(
+      ["issue", "view", issueId, "--json", "--no-comments"],
+      env ?? undefined
+    );
+    try {
+      return parseIssueFromJson(stdout, issueId);
+    } catch {
+      return parseIssueOutput(issueId, stdout);
+    }
   } catch (err) {
     const msg =
       process.env.HERMES_DEBUG === "1" && err instanceof Error
