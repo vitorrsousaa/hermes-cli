@@ -131,21 +131,21 @@ cw clear-cache --all    # Clear all cw summary caches
 
 ## Utilities
 
-### Get current branch name
+### `copyb` — copy branch name
+
+`cw copyb` prints the current Git branch and copies it to the clipboard by default (short for “copy branch”). Handy for pasting branch names into deploys, PRs, or Linear without typing or selecting manually.
 
 ```bash
-cw branch          # prints + copies to clipboard: feat/ENG-4135
-cw branch --stg    # prints + copies: feat/ENG-4135-stg
-cw branch --no-copy # prints only (no copy)
-cw branch -s       # shorthand: staging suffix + copy
+cw copyb           # prints + copies to clipboard: feat/ENG-4135
+cw copyb --stg     # prints + copies: feat/ENG-4135-stg
+cw copyb --no-copy # prints only (no copy)
+cw copyb -s        # shorthand: staging suffix + copy
 ```
 
 | Flag | Short | Description |
 |------|-------|-------------|
 | `--stg` | `-s` | Appends `-stg` suffix to the branch name |
 | `--no-copy` | | Do not copy to clipboard (copy is default) |
-
-Useful as a shortcut instead of terminal aliases or scripts.
 
 ### Toggle between main and staging branch
 

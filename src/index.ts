@@ -5,7 +5,7 @@ import { startCommand } from "./commands/start.js";
 import { testCommand } from "./commands/test.js";
 import { cleanupCommand } from "./commands/cleanup.js";
 import { reviewCommand } from "./commands/review.js";
-import { branchCommand } from "./commands/branch.js";
+import { copybCommand } from "./commands/copyb.js";
 import { checkCommand } from "./commands/check.js";
 import { toggleCommand } from "./commands/toggle.js";
 import { syncCommand } from "./commands/sync.js";
@@ -148,13 +148,13 @@ taskCmd
   });
 
 program
-  .command("branch")
+  .command("copyb")
   .description("Print current branch name (copies to clipboard by default)")
   .option("-s, --stg", "Append -stg suffix to branch name")
   .option("--no-copy", "Do not copy to clipboard")
-  .addHelpText("after", "\nShorthand:\n  cw branch -s    staging suffix + copy to clipboard")
+  .addHelpText("after", "\nShorthand:\n  cw copyb -s    staging suffix + copy to clipboard")
   .action(async (options: { stg?: boolean; copy?: boolean }) => {
-    await branchCommand(options);
+    await copybCommand(options);
   });
 
 program

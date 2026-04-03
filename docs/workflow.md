@@ -19,7 +19,7 @@
 ## Utility commands (outside main flow)
 
 - **`cw summary`** — Post `@summarizer` comment on the Linear task (see [summary.md](summary.md))
-- **`cw branch`** — Branch name + clipboard
+- **`cw copyb`** — Branch name + clipboard (`copyb` = copy branch)
 - **`cw toggle`** — Switch main ↔ -stg
 - **`cw sync`** — Sync main → -stg
 - **`cw update`** — Merge main/staging into current branch

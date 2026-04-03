@@ -16,7 +16,7 @@
 | `ready` | ready.ts | linear | No | Status DEV Testing → Ready for QA (ticket from branch or -b) |
 | `task status` | task-status.ts | linear | No | Show task ID, title, URL, status (branch or -b) |
 | `task move` | task-move.ts | linear | No | Change task status via list (branch or -b) |
-| `branch` | branch.ts | — | No | Branch name ± clipboard |
+| `copyb` | copyb.ts | — | No | Branch name ± clipboard |
 | `toggle` | toggle.ts | — | No | Switch main ↔ -stg |
 | `sync` | sync.ts | — | No | Sync main → -stg |
 | `update` | update.ts | — | No | Merge main/staging into branch |
@@ -95,9 +95,9 @@
 - Changes task status; user selects new status from a list (In Progress, DEV Testing, Ready for QA).
 - Ticket from current branch or `-b`. Prereq: linear.
 
-### branch
+### copyb
 
-- `cw branch [-s] [--no-copy]`
+- `cw copyb [-s] [--no-copy]`
 - `-s`: add `-stg` suffix
 - `--no-copy`: do not copy to clipboard
 

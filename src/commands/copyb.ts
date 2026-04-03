@@ -2,7 +2,7 @@ import chalk from "chalk";
 import { copyToClipboard } from "../lib/github.js";
 import { getCurrentBranch } from "../lib/git.js";
 
-export async function branchCommand(options: {
+export async function copybCommand(options: {
   stg?: boolean;
   copy?: boolean;
 }): Promise<void> {
