@@ -22,6 +22,6 @@
 - **`cw copyb`** — Branch name + clipboard (`copyb` = copy branch)
 - **`cw toggle`** — Switch main ↔ -stg
 - **`cw sync`** — Sync main → -stg
-- **`cw update`** — Merge main/staging into current branch
+- **`cw update`** — Merge into current branch (default: `main`; `-t stg` for staging)
 - **`cw push`** — Push current branch
 - **`cw check`** — Typecheck, lint, prettier

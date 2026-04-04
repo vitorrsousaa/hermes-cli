@@ -31,7 +31,7 @@ async function runStep(label: string, fn: () => Promise<void>): Promise<void> {
 export async function updateCommand(options: {
   target?: Target;
 }): Promise<void> {
-  const target = options.target ?? "stg";
+  const target = options.target ?? "main";
   const branch = resolveBranch(target);
   const remoteBranch = `origin/${branch}`;
 

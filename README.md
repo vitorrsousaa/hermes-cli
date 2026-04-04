@@ -173,16 +173,16 @@ Pushes the current branch to origin. No need to type the branch name.
 ### Update branch with main or staging
 
 ```bash
-cw update
+cw update              # merges origin/main (default)
 cw update -t main
-cw update -t stg
+cw update -t stg       # merges origin/staging
 ```
 
 Merges `origin/main` or `origin/staging` into the current branch.
 
 | Flag | Short | Description |
 |------|-------|-------------|
-| `--target <main\|stg>` | `-t` | Branch to merge from (default: stg) |
+| `--target <main\|stg>` | `-t` | Branch to merge from (default: main) |
 
 ### Sync branch to staging
 

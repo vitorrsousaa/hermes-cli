@@ -175,14 +175,14 @@ program
 program
   .command("update")
   .description("Update current branch with main or staging")
-  .option("-t, --target <main|stg>", "Branch to merge from", "stg")
+  .option("-t, --target <main|stg>", "Branch to merge from", "main")
   .action(async (options: { target?: string }) => {
     const target = options.target as "main" | "stg" | undefined;
     if (target && !["main", "stg"].includes(target)) {
       console.error("Invalid target. Use: main or stg");
       process.exit(1);
     }
-    await updateCommand({ target: target ?? "stg" });
+    await updateCommand({ target: target ?? "main" });
   });
 
 program

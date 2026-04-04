@@ -19,7 +19,7 @@
 | `copyb` | copyb.ts | — | No | Branch name ± clipboard |
 | `toggle` | toggle.ts | — | No | Switch main ↔ -stg |
 | `sync` | sync.ts | — | No | Sync main → -stg |
-| `update` | update.ts | — | No | Merge main/staging into branch |
+| `update` | update.ts | — | No | Merge main/staging into branch (default: main) |
 | `push` | push.ts | — | No | Push current branch |
 | `co` | checkout.ts | — | No | Checkout branch (like git checkout; -b to create) |
 | `check` | check.ts | — | No | Typecheck, lint, prettier |
@@ -115,7 +115,7 @@
 
 ### update
 
-- `cw update [-t main|stg]`
+- `cw update [-t main|stg]` — default: merge `origin/main`; use `-t stg` for `origin/staging`
 - Merges `origin/main` or `origin/staging` into current branch
 
 ### push
