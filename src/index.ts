@@ -20,6 +20,7 @@ import { previewUrlCommand } from "./commands/preview-url.js";
 import { taskStatusCommand } from "./commands/task-status.js";
 import { taskMoveCommand } from "./commands/task-move.js";
 import { checkoutCommand } from "./commands/checkout.js";
+import { rebuildCommand } from "./commands/rebuild.js";
 
 const program = new Command();
 
@@ -57,6 +58,20 @@ program
       sameCore: options.sameCore,
       timesheets: options.timesheets === true ? true : options.timesheets,
       socketio: options.socketio,
+    });
+  });
+
+program
+  .command("rebuild")
+  .description("Rebuild ephemeral environment (cw-react branch default: current, -stg stripped)")
+  .option("-r, --react <branch>", "cw-react branch (default: current branch, -stg stripped)")
+  .option("-c, --core <branch>", "cw-core branch (enables core build)")
+  .option("-t, --timesheets <branch>", "cw-ms-timesheets branch (enables timesheets build)")
+  .action(async (options: { react?: string; core?: string; timesheets?: string }) => {
+    await rebuildCommand({
+      react: options.react,
+      core: options.core,
+      timesheets: options.timesheets,
     });
   });
 

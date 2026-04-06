@@ -6,6 +6,8 @@ export const DEFAULTS = {
   },
   github: {
     deployWorkflow: "deploy-ephemeral.yml",
+    buildOrReuseWorkflow: "build-or-reuse.yaml",
+    buildOrReuseWorkflowId: "175140367", // Build or Reuse Images for Feature Env
     deployFeatureWorkflowId: "172365310", // Deploy Feature Environment
     cleanupWorkflow: "delete-dynamic-env.yaml", // Cleanup Stale FE Namespaces
   },

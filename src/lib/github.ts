@@ -44,9 +44,10 @@ export async function triggerWorkflow(
     args.push(...inputArgs);
   }
 
+  const triggeredAt = new Date();
   await execa("gh", args);
 
-  await sleep(2000);
+  await sleep(3000);
 
   const listArgs = [
     "run",
@@ -54,25 +55,33 @@ export async function triggerWorkflow(
     "--workflow",
     workflow,
     "--limit",
-    "1",
+    "5",
     "--json",
-    "databaseId,url",
+    "databaseId,url,createdAt",
   ];
   if (ref) {
     listArgs.push("--branch", ref);
   }
-  const { stdout } = await execa("gh", listArgs);
-  const runs = JSON.parse(stdout) as { databaseId: number; url: string }[];
-  if (!runs.length) {
-    throw new HermesError(
-      "Could not get the workflow run ID.",
-      "Check if the workflow was triggered correctly."
-    );
+
+  // Retry up to ~15 s to give GitHub time to register the new run
+  const RETRY_DELAY_MS = 2000;
+  const RETRY_MAX = 6;
+  for (let attempt = 0; attempt < RETRY_MAX; attempt++) {
+    const { stdout } = await execa("gh", listArgs);
+    const runs = JSON.parse(stdout) as { databaseId: number; url: string; createdAt: string }[];
+    const ourRun = runs.find((r) => new Date(r.createdAt) >= triggeredAt);
+    if (ourRun) {
+      return { runId: String(ourRun.databaseId), url: ourRun.url };
+    }
+    if (attempt < RETRY_MAX - 1) {
+      await sleep(RETRY_DELAY_MS);
+    }
   }
-  return {
-    runId: String(runs[0].databaseId),
-    url: runs[0].url,
-  };
+
+  throw new HermesError(
+    "Could not get the workflow run ID.",
+    "Check if the workflow was triggered correctly."
+  );
 }
 
 export async function waitForRun(runId: string): Promise<GhRunResult> {

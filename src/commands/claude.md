@@ -8,6 +8,7 @@
 |---------|------|--------|---------|-------------|
 | `start` | start.ts | gh, linear | No | Creates branch |
 | `deployfe` | deploy.ts | gh | No | Triggers deploy workflow |
+| `rebuild` | rebuild.ts | gh | No | Rebuild ephemeral env (push + retrigger; -stg stripped) |
 | `test` | test.ts | gh, linear | No | Deploy + status DEV Testing (uses current branch) |
 | `cleanup` | cleanup.ts | gh | No | Cleanup Stale FE Namespaces (current branch or -b) |
 | `preview-url` | preview-url.ts | — | No | Ephemeral preview URL + copy to clipboard (-stg stripped) |
@@ -49,6 +50,16 @@
 - Core/timesheets: default `main`; `-c` / `-t` with optional branch to build.
 - Moves ticket to "DEV Testing" (skips if branch is not feat/XXX or fix/XXX).
 - See [../../docs/test.md](../../docs/test.md)
+
+### rebuild
+
+- `cw rebuild [-r branch] [-c branch] [-t branch]`
+- `-r`: cw-react branch (default: current branch, `-stg` stripped)
+- `-c <branch>`: cw-core branch — **enables** core build with that branch
+- `-t <branch>`: cw-ms-timesheets branch — **enables** timesheets build with that branch
+- Without any flag: only the react branch is sent; core and timesheets are skipped (`build_core=false`, `build_timesheets=false`)
+- Pushes the react branch, then triggers Deploy Feature Environment. Copies workflow URL to clipboard.
+- See [../../docs/rebuild.md](../../docs/rebuild.md)
 
 ### cleanup
 
