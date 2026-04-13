@@ -1,6 +1,6 @@
 import chalk from "chalk";
 import { DEFAULTS } from "../lib/defaults.js";
-import { getCurrentBranch, pushBranch } from "../lib/git.js";
+import { getCurrentBranch, pushBranch, stripStgBranchSuffix } from "../lib/git.js";
 import {
   copyToClipboard,
   triggerWorkflow,
@@ -67,8 +67,9 @@ function resolveTimesheets(
 export async function deployCommand(options: DeployOptions): Promise<void> {
   await checkPrerequisites(["gh"]);
 
-  const branchReact =
-    options.react ?? (await getCurrentBranch());
+  const branchReact = stripStgBranchSuffix(
+    options.react ?? (await getCurrentBranch())
+  );
   const coreResolved = options.sameCore
     ? { build: true, branch: branchReact }
     : resolveCore(options);
