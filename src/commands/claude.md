@@ -141,9 +141,14 @@
 
 ### check
 
-- `cw check`
+- `cw check [-st] [-sl] [-sp] [-nc]`
 - Runs: typecheck, lint:fix, prettier:fix
-- If lint/prettier modify files, auto-commits them
+- `-st, --skip-typecheck`: skip typecheck step
+- `-sl, --skip-lint`: skip lint step
+- `-sp, --skip-prettier`: skip prettier step
+- `-nc, --no-commit`: do not auto-commit files modified by lint/prettier
+- If all three steps are skipped, nothing runs (just prints a notice)
+- If lint/prettier modify files, auto-commits them (unless `--no-commit`)
 
 ### summary
 

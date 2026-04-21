@@ -24,4 +24,4 @@
 - **`cw sync`** — Sync main → -stg
 - **`cw update`** — Merge into current branch (default: `main`; `-t stg` for staging)
 - **`cw push`** — Push current branch
-- **`cw check`** — Typecheck, lint, prettier
+- **`cw check`** — Typecheck, lint, prettier (see [check.md](check.md))

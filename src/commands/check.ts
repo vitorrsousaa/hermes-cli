@@ -10,6 +10,13 @@ interface StepResult {
   error?: string;
 }
 
+interface CheckOptions {
+  skipTypecheck?: boolean;
+  skipLint?: boolean;
+  skipPrettier?: boolean;
+  noCommit?: boolean;
+}
+
 async function getBaseBranch(): Promise<string> {
   const branch = await getCurrentBranch();
   return branch.endsWith("-stg") ? branch.slice(0, -4) : branch;
@@ -42,32 +49,50 @@ async function runStep(
   }
 }
 
-export async function checkCommand(): Promise<void> {
+export async function checkCommand(options: CheckOptions = {}): Promise<void> {
+  const { skipTypecheck, skipLint, skipPrettier, noCommit } = options;
+
+  if (skipTypecheck && skipLint && skipPrettier) {
+    console.log(
+      chalk.yellow("\n  All checks skipped (typecheck, lint, prettier).\n")
+    );
+    return;
+  }
+
   console.log(chalk.bold("\n  Running checks...\n"));
 
-  // Step 1: Typecheck
-  const typecheck = await runStep(
-    "typecheck",
-    "Typecheck (tsc --noEmit)",
-    "npx",
-    ["tsc", "--noEmit"]
-  );
+  const steps: StepResult[] = [];
 
-  // Step 2: Lint (with auto-fix)
-  const lint = await runStep("lint", "Lint (eslint --fix)", "npm", [
-    "run",
-    "lint:fix",
-  ]);
+  if (!skipTypecheck) {
+    steps.push(
+      await runStep("typecheck", "Typecheck (tsc --noEmit)", "npx", [
+        "tsc",
+        "--noEmit",
+      ])
+    );
+  } else {
+    console.log(chalk.gray("  ⊘ Typecheck skipped"));
+  }
 
-  // Step 3: Prettier (with auto-fix)
-  const prettier = await runStep(
-    "prettier",
-    "Prettier (format)",
-    "npm",
-    ["run", "prettier:fix"]
-  );
+  if (!skipLint) {
+    steps.push(
+      await runStep("lint", "Lint (eslint --fix)", "npm", ["run", "lint:fix"])
+    );
+  } else {
+    console.log(chalk.gray("  ⊘ Lint skipped"));
+  }
 
-  const steps = [typecheck, lint, prettier];
+  if (!skipPrettier) {
+    steps.push(
+      await runStep("prettier", "Prettier (format)", "npm", [
+        "run",
+        "prettier:fix",
+      ])
+    );
+  } else {
+    console.log(chalk.gray("  ⊘ Prettier skipped"));
+  }
+
   const failed = steps.filter((s) => !s.passed);
 
   console.log("");
@@ -91,11 +116,6 @@ export async function checkCommand(): Promise<void> {
     return;
   }
 
-  // Files were modified by lint/prettier — commit them
-  const branch = await getBaseBranch();
-  const ticketId = extractIssueIdFromBranch(branch) ?? branch;
-  const commitMsg = `fix(${ticketId}): fix linter errors`;
-
   console.log(
     chalk.yellow(`  ${modified.length} file(s) modified by lint/prettier:\n`)
   );
@@ -103,6 +123,17 @@ export async function checkCommand(): Promise<void> {
     console.log(chalk.gray(`    ${file}`));
   }
   console.log("");
+
+  if (noCommit) {
+    console.log(
+      chalk.green.bold("  All checks passed. Commit skipped (--no-commit).\n")
+    );
+    return;
+  }
+
+  const branch = await getBaseBranch();
+  const ticketId = extractIssueIdFromBranch(branch) ?? branch;
+  const commitMsg = `fix(${ticketId}): fix linter errors`;
 
   await execa("git", ["add", ...modified]);
   await execa("git", ["commit", "-m", commitMsg]);

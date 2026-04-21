@@ -3,8 +3,12 @@
   "version": "0.1.0",
   "type": "module",
   "description": "CLI para automatizar o fluxo de desenvolvimento entre Linear, GitHub e Slack",
-  "bin": { "cw": "./dist/index.js" },
-  "files": ["dist"],
+  "bin": {
+    "cw": "./dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",

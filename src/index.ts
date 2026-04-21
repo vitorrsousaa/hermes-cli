@@ -175,8 +175,22 @@ program
 program
   .command("check")
   .description("Run typecheck, lint, and prettier on the current project")
-  .action(async () => {
-    await checkCommand();
+  .option("-st, --skip-typecheck", "Skip the typecheck step")
+  .option("-sl, --skip-lint", "Skip the lint step")
+  .option("-sp, --skip-prettier", "Skip the prettier step")
+  .option("-nc, --no-commit", "Do not auto-commit files modified by lint/prettier")
+  .action(async (options: {
+    skipTypecheck?: boolean;
+    skipLint?: boolean;
+    skipPrettier?: boolean;
+    commit?: boolean;
+  }) => {
+    await checkCommand({
+      skipTypecheck: options.skipTypecheck,
+      skipLint: options.skipLint,
+      skipPrettier: options.skipPrettier,
+      noCommit: options.commit === false,
+    });
   });
 
 program
