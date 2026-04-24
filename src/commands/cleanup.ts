@@ -21,7 +21,7 @@ export async function cleanupCommand(options: CleanupOptions = {}): Promise<void
       triggerWorkflow(
         DEFAULTS.github.cleanupWorkflow,
         { branch_name: branchName },
-        { ref: "main" }
+        { ref: "main", repo: DEFAULTS.github.repo }
       )
   );
 

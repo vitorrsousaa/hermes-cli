@@ -45,7 +45,7 @@ export async function rebuildCommand(options: RebuildOptions = {}): Promise<void
   const { url } = await triggerWorkflow(
     DEFAULTS.github.buildOrReuseWorkflowId,
     workflowInputs,
-    { ref: "main" }
+    { ref: "main", repo: DEFAULTS.github.repo }
   );
 
   console.log(chalk.green("✓ Workflow triggered"));

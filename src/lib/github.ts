@@ -24,6 +24,8 @@ export interface TriggerWorkflowResult {
 export interface TriggerWorkflowOptions {
   /** Git ref to run workflow from (e.g. "main"). If not set, uses inputs.branch when present. */
   ref?: string;
+  /** GitHub repo in "owner/repo" format (e.g. "Carewebs/cw-react"). If set, gh targets this repo instead of the current directory's remote. */
+  repo?: string;
 }
 
 export async function triggerWorkflow(
@@ -32,6 +34,10 @@ export async function triggerWorkflow(
   options?: TriggerWorkflowOptions
 ): Promise<TriggerWorkflowResult> {
   const args = ["workflow", "run", workflow];
+  const repo = options?.repo;
+  if (repo) {
+    args.push("--repo", repo);
+  }
   const ref = options?.ref ?? inputs?.branch;
   if (ref) {
     args.push("--ref", ref);
@@ -59,6 +65,9 @@ export async function triggerWorkflow(
     "--json",
     "databaseId,url,createdAt",
   ];
+  if (repo) {
+    listArgs.push("--repo", repo);
+  }
   if (ref) {
     listArgs.push("--branch", ref);
   }

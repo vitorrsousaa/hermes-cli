@@ -5,8 +5,7 @@ export const DEFAULTS = {
     statusInReview: "Ready for QA",
   },
   github: {
-    deployWorkflow: "deploy-ephemeral.yml",
-    buildOrReuseWorkflow: "build-or-reuse.yaml",
+    repo: "Carewebs/cw-react",
     buildOrReuseWorkflowId: "175140367", // Build or Reuse Images for Feature Env
     deployFeatureWorkflowId: "172365310", // Deploy Feature Environment
     cleanupWorkflow: "delete-dynamic-env.yaml", // Cleanup Stale FE Namespaces

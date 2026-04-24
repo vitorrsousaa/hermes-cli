@@ -31,7 +31,7 @@ export async function triggerDeployFeatureWorkflow(
   return triggerWorkflow(
     DEFAULTS.github.deployFeatureWorkflowId,
     workflowInputs,
-    { ref: "main" }
+    { ref: "main", repo: DEFAULTS.github.repo }
   );
 }
 
