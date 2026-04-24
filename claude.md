@@ -15,7 +15,6 @@ Hermes is a CLI that automates the development workflow between **Linear** and *
 | [docs/workflow.md](docs/workflow.md) | Typical workflow |
 | [docs/conventions.md](docs/conventions.md) | Branch conventions, defaults, integrations |
 | [docs/development.md](docs/development.md) | Development, debug, patterns, adding commands |
-| [docs/test.md](docs/test.md) | `cw test` command |
 | [docs/rebuild.md](docs/rebuild.md) | `cw rebuild` command |
 | [docs/summary.md](docs/summary.md) | `cw summary` command |
 | [docs/check.md](docs/check.md) | `cw check` command |

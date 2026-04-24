@@ -55,22 +55,7 @@ cw deployfe --no-socketio        # disable Socket.IO deploy (enabled by default)
 - **cw-core e cw-ms-timesheets:** o workflow **sempre** inclui build dos dois. Se não passares branch em `-c` ou `-t`, o Hermes envia **`main`** como branch de cada serviço. Usa `-c <branch>` / `-t <branch>` para outra branch; usa `--same-core` (`-sc`) para o core usar a **mesma** branch que o React (em vez de `main`).
 - **Socket.IO (cw-socketio):** por defeito **ligado** — não precisas de passar nenhum parâmetro para incluir o deploy do Socket.IO. Só usa **`--no-socketio`** quando quiseres **desligar**.
 
-### 3. Deploy ephemeral environment and move ticket to DEV Testing
-
-```bash
-cw test
-cw test -ss                       # Skip AI summary and Linear ticket update (-ss / --skip-summary)
-cw test -sd                      # Skip ephemeral environment; only move ticket + optional summary (--skip-deploy)
-cw test -c                       # Also build cw-core (branch: main)
-cw test -c feat/xyz -t feat/abc  # Build core from feat/xyz, timesheets from feat/abc
-```
-
-- Uses **current branch** for React and for the Linear ticket (derived from branch name `feat/XXX` or `fix/XXX`).
-- Core/Timesheets: `main` by default; use `-c` / `-t` with optional branch to build them.
-- Triggers the deploy workflow, moves ticket to "DEV Testing", copies workflow URL.
-- **Optional summary**: If `claude-api-key` is set (via `cw config` or `cw config set claude-api-key <key>`), generates AI task summary and updates Linear title. If the API key is not configured, these summary steps are automatically skipped (equivalent to running with `--skip-summary`). Use `-ss` or `--skip-summary` to skip even when a key is configured.
-
-### 4. Create pull request
+### 3. Create pull request
 
 ```bash
 cw prc
@@ -89,7 +74,7 @@ For `-t stg`: uses the branch with `-stg` suffix (e.g. `feat/ENG-123-stg`). If i
 | `--target <stg\|main\|both>` | `-t` | Target branch: stg (default), main, or both |
 | `--draft` | `-d` | Create as draft PR |
 
-### 5. Request review
+### 4. Request review
 
 ```bash
 cw review
@@ -97,7 +82,7 @@ cw review
 
 - Moves ticket to "Ready for QA"
 
-### 5b. Move ticket to Ready for QA
+### 4b. Move ticket to Ready for QA
 
 ```bash
 cw ready
@@ -106,7 +91,7 @@ cw ready
 - Moves ticket from "DEV Testing" to "Ready for QA"
 - Use when you've finished testing and want to hand off to QA
 
-### 6. Tear down ephemeral environment
+### 5. Tear down ephemeral environment
 
 ```bash
 cw cleanup              # Clean up namespace for current branch
@@ -115,7 +100,7 @@ cw cleanup -b feat/xyz  # Clean up namespace for specific branch
 
 - Uses **current branch** by default; `-b` to specify another. Triggers Cleanup Stale FE Namespaces workflow.
 
-### 7. Clear summary cache
+### 6. Clear summary cache
 
 ```bash
 cw clear-cache          # Clear cache for current branch

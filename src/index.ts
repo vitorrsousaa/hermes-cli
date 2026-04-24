@@ -2,7 +2,6 @@ import { Command } from "commander";
 import chalk from "chalk";
 import { HermesError } from "./lib/errors.js";
 import { startCommand } from "./commands/start.js";
-import { testCommand } from "./commands/test.js";
 import { cleanupCommand } from "./commands/cleanup.js";
 import { reviewCommand } from "./commands/review.js";
 import { copybCommand } from "./commands/copyb.js";
@@ -72,24 +71,6 @@ program
       react: options.react,
       core: options.core,
       timesheets: options.timesheets,
-    });
-  });
-
-program
-  .command("test")
-  .description("Move ticket to DEV Testing and deploy ephemeral environment (uses current branch)")
-  .option("-sd, --skip-deploy", "Skip triggering ephemeral environment deploy")
-  .option("-c, --core [branch]", "Build cw-core; optional branch (default: main)")
-  .option("-t, --timesheets [branch]", "Build cw-ms-timesheets; optional branch (default: main)")
-  .action(async (options: {
-    skipDeploy?: boolean;
-    core?: string | boolean;
-    timesheets?: string | boolean;
-  }) => {
-    await testCommand({
-      skipDeploy: options.skipDeploy,
-      core: options.core === true ? true : options.core,
-      timesheets: options.timesheets === true ? true : options.timesheets,
     });
   });
 

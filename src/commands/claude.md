@@ -9,7 +9,6 @@
 | `start` | start.ts | gh, linear | No | Creates branch |
 | `deployfe` | deploy.ts | gh | No | Triggers deploy workflow |
 | `rebuild` | rebuild.ts | gh | No | Rebuild ephemeral env (push + retrigger; -stg stripped) |
-| `test` | test.ts | gh, linear | No | Deploy + status DEV Testing (uses current branch) |
 | `cleanup` | cleanup.ts | gh | No | Cleanup Stale FE Namespaces (current branch or -b) |
 | `preview-url` | preview-url.ts | — | No | Ephemeral preview URL + copy to clipboard (-stg stripped) |
 | `prc` | pr-create.ts | gh, linear | No | Creates PR(s) (ticket from branch); assigns PR to you (`--assignee @me`) |
@@ -42,14 +41,6 @@
 - `-sc, --same-core`: cw-core usa a mesma branch que o React (ignora o default `main` para o core)
 - `-t [branch]`: branch do cw-ms-timesheets (omitir o valor ⇒ `main`)
 - **Socket.IO:** ligado por defeito — não é preciso parâmetro para incluir o deploy; só `--no-socketio` para desligar
-
-### test
-
-- `cw test [-sd|--skip-deploy] [-c [branch]] [-t [branch]]`
-- Uses **current branch** for deploy and for Linear ticket (extracted from branch name).
-- Core/timesheets: default `main`; `-c` / `-t` with optional branch to build.
-- Moves ticket to "DEV Testing" (skips if branch is not feat/XXX or fix/XXX).
-- See [../../docs/test.md](../../docs/test.md)
 
 ### rebuild
 
