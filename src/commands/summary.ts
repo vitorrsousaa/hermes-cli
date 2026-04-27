@@ -1,12 +1,14 @@
 import chalk from "chalk";
-import { getCurrentBranch } from "../lib/git.js";
-import { getTicketIdFromBranch, commentOnIssue } from "../lib/linear.js";
 import { HermesError } from "../lib/errors.js";
+import { getCurrentBranch } from "../lib/git.js";
+import { commentOnIssue, getTicketIdFromBranch } from "../lib/linear.js";
+import { checkPrerequisites } from "../lib/prerequisites.js";
 import { withSpinner } from "../lib/spinner.js";
 
 const SUMMARIZER_COMMENT = "@summarizer";
 
 export async function summaryCommand(): Promise<void> {
+  await checkPrerequisites(["linear"]);
   const branch = await getCurrentBranch();
   const ticketId = getTicketIdFromBranch(branch);
 

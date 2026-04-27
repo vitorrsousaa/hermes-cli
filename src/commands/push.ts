@@ -2,8 +2,10 @@ import chalk from "chalk";
 import { execa, type ExecaError } from "execa";
 import ora from "ora";
 import { getCurrentBranch } from "../lib/git.js";
+import { checkPrerequisites } from "../lib/prerequisites.js";
 
 export async function pushCommand(): Promise<void> {
+  await checkPrerequisites(["gh"]);
   const branch = await getCurrentBranch();
 
   console.log(chalk.bold(`\n  Pushing ${chalk.cyan(branch)} to origin\n`));
